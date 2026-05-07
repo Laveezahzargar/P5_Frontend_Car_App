@@ -76,6 +76,7 @@ namespace P5_Frontend_Car_App
                     .ToList();
 
                 AddButtons();
+                StyleGridButtons();
             }
             catch (Exception ex)
             {
@@ -137,22 +138,67 @@ namespace P5_Frontend_Car_App
                 await DeleteEngine(id);
             }
         }
+        void StyleGridButtons()
+        {
+            foreach (DataGridViewRow row in dataGridViewEngine.Rows)
+            {
+                // Edit button
+                DataGridViewButtonCell editBtn =
+                    (DataGridViewButtonCell)row.Cells["Edit"];
 
+                editBtn.Style.BackColor = Color.DodgerBlue;
+                editBtn.Style.ForeColor = Color.White;
+                editBtn.Style.SelectionBackColor = Color.RoyalBlue;
+                editBtn.Style.SelectionForeColor = Color.White;
+
+                // Delete button
+                DataGridViewButtonCell deleteBtn =
+                    (DataGridViewButtonCell)row.Cells["Delete"];
+
+                deleteBtn.Style.BackColor = Color.Red;
+                deleteBtn.Style.ForeColor = Color.White;
+                deleteBtn.Style.SelectionBackColor = Color.DarkRed;
+                deleteBtn.Style.SelectionForeColor = Color.White;
+
+                //view cars button
+                DataGridViewButtonCell viewBtn =
+                   (DataGridViewButtonCell)row.Cells["ViewCars"];
+
+                viewBtn.Style.BackColor = Color.SeaGreen;
+                viewBtn.Style.ForeColor = Color.White;
+                viewBtn.Style.SelectionBackColor = Color.DarkGreen;
+                viewBtn.Style.SelectionForeColor = Color.White;
+            }
+        }
         async Task DeleteEngine(int id)
         {
             try
             {
-                await api.DeleteAsync($"EngineCapacity/{id}");
+                var confirm = MessageBox.Show(
+                    "Are you sure you want to delete this engine capacity?",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
+                await api.DeleteAsync($"api/EngineCapacity/{id}");
+
                 await LoadEngineCapacity();
+
                 Log.Warning("Engine Capacity deleted: {Id}", id);
+
+                MessageBox.Show("Engine capacity deleted successfully");
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 Log.Error(ex, "Failed to delete engine capacity.");
-                MessageBox.Show("Delete failed");
+
+                MessageBox.Show(
+                    "Cannot delete engine capacity because it is linked to cars.");
             }
         }
-
         private async void btnAdd_Click(object sender, EventArgs e)
         {
             try

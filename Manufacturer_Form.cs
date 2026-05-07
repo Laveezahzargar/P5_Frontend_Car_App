@@ -47,7 +47,38 @@ namespace P5_Frontend_Car_App
             // Button stays top-right
             button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         }
+        void StyleGridButtons()
+        {
+            foreach (DataGridViewRow row in dataGridViewManufacturer.Rows)
+            {
+                // Edit button
+                DataGridViewButtonCell editBtn =
+                    (DataGridViewButtonCell)row.Cells["Edit"];
 
+                editBtn.Style.BackColor = Color.DodgerBlue;
+                editBtn.Style.ForeColor = Color.White;
+                editBtn.Style.SelectionBackColor = Color.RoyalBlue;
+                editBtn.Style.SelectionForeColor = Color.White;
+
+                // Delete button
+                DataGridViewButtonCell deleteBtn =
+                    (DataGridViewButtonCell)row.Cells["Delete"];
+
+                deleteBtn.Style.BackColor = Color.Red;
+                deleteBtn.Style.ForeColor = Color.White;
+                deleteBtn.Style.SelectionBackColor = Color.DarkRed;
+                deleteBtn.Style.SelectionForeColor = Color.White;
+
+                // View Cars button
+                DataGridViewButtonCell viewBtn =
+                    (DataGridViewButtonCell)row.Cells["ViewCars"];
+
+                viewBtn.Style.BackColor = Color.SeaGreen;
+                viewBtn.Style.ForeColor = Color.White;
+                viewBtn.Style.SelectionBackColor = Color.DarkGreen;
+                viewBtn.Style.SelectionForeColor = Color.White;
+            }
+        }
         private void StyleButton(Button btn)
         {
             btn.BackColor = Color.FromArgb(0, 120, 215);
@@ -61,17 +92,18 @@ namespace P5_Frontend_Car_App
             this.BackColor = Color.White;
         }
 
-        async void LoadManufacturers()
+        async Task LoadManufacturers()
         {
             try
             {
                 var api = new ApiService();
 
-                var list = await api.GetAsync<List<Manufacturer>>("api/Manufacturer");
+                var list = await api.GetAsync<List<Manufacturer>>("Manufacturer");
 
                 dataGridViewManufacturer.DataSource = list;
 
                 AddButtons();
+                StyleGridButtons();
              
             }
             catch (Exception ex)
@@ -135,25 +167,43 @@ namespace P5_Frontend_Car_App
                 DeleteManufacturer(id);
             }
         }
-
-        async void DeleteManufacturer(int id)
+        async Task DeleteManufacturer(int id)
         {
             try
             {
+                if (id == 0)
+                {
+                    MessageBox.Show("Invalid manufacturer selected");
+                    return;
+                }
+
+                var confirm = MessageBox.Show(
+                    "Are you sure you want to delete this manufacturer?",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (confirm != DialogResult.Yes)
+                    return;
+
                 var api = new ApiService();
 
-                await api.DeleteAsync($"api/Manufacturer/{id}");
+                await api.DeleteAsync($"Manufacturer/{id}");
 
-                LoadManufacturers();
+                await LoadManufacturers();
+
                 Log.Warning("Manufacturer deleted: {Id}", id);
+
+                MessageBox.Show("Manufacturer deleted successfully");
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to delete manufacturers.");
-                MessageBox.Show("Operation failed.");
+
+                MessageBox.Show(
+                    "Cannot delete manufacturer because it is linked to cars.");
             }
         }
-
         private async void btnAdd_Click(object sender, EventArgs e)
         {
             try
@@ -176,13 +226,13 @@ namespace P5_Frontend_Car_App
                 if (selectedManufacturerId == 0)
                 {
                     // CREATE
-                    await api.PostAsync("api/Manufacturer", data);
+                    await api.PostAsync("Manufacturer", data);
                     Log.Information("User added new manufacturer: {ManufacturerName}", txtName.Text);
                 }
                 else
                 {
                     // UPDATE
-                    await api.PutAsync($"api/Manufacturer/{selectedManufacturerId}", data);
+                    await api.PutAsync($"Manufacturer/{selectedManufacturerId}", data);
                     Log.Information("User updated manufacturer: {ManufacturerId}, Name: {ManufacturerName}", selectedManufacturerId, txtName.Text);
                 }
 

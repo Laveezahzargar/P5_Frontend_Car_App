@@ -9,7 +9,7 @@ public class ApiService
     public ApiService()
     {
         _http = new HttpClient();
-        _http.BaseAddress = new Uri("https://localhost:7111/");
+        _http.BaseAddress = new Uri("http://localhost:5294/api/");
     }
 
     public async Task<T> GetAsync<T>(string url)
@@ -37,6 +37,8 @@ public class ApiService
 
     public async Task DeleteAsync(string url)
     {
-        await _http.DeleteAsync(url);
+        var response = await _http.DeleteAsync(url);
+
+        response.EnsureSuccessStatusCode();
     }
 }

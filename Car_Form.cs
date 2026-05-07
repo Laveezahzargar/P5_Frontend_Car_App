@@ -125,12 +125,11 @@ namespace P5_Frontend_Car_App
                     c.Transmission,
                     c.FuelType,
                     c.Price,
-                    c.Year,
-                    c.ManufacturerId,
-                    c.EngineCapacityId
+                    c.Year
                 }).ToList();
 
                 AddButtonsToGrid();
+                StyleGridButtons();
             }
             catch (Exception ex)
             {
@@ -143,7 +142,7 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<Manufacturer>("Manufacturer");
+                var list = await api.GetAsync<List<Manufacturer>>("Manufacturer");
 
                 cmbManufacturerId.DisplayMember = "Name";
                 cmbManufacturerId.ValueMember = "Id";
@@ -160,7 +159,7 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<EngineCapacity>("EngineCapacity");
+                var list = await api.GetAsync<List<EngineCapacity>>("EngineCapacity");
 
                 cmbEngineId.DisplayMember = "Capacity";
                 cmbEngineId.ValueMember = "Id";
@@ -206,8 +205,7 @@ namespace P5_Frontend_Car_App
             }
             else if (col == "Delete")
             {
-                await api.DeleteAsync($"Car/{id}");
-                await LoadCars();
+                await DeleteCar(id);
             }
         }
 
@@ -225,6 +223,64 @@ namespace P5_Frontend_Car_App
             cmbEngineId.SelectedValue = row.Cells["EngineCapacityId"].Value;
 
             button1.Text = "Update";
+        }
+        void StyleGridButtons()
+        {
+            foreach (DataGridViewRow row in dataGridViewCar.Rows)
+            {
+                // Edit button
+                DataGridViewButtonCell editBtn =
+                    (DataGridViewButtonCell)row.Cells["Edit"];
+
+                editBtn.Style.BackColor = Color.DodgerBlue;
+                editBtn.Style.ForeColor = Color.White;
+                editBtn.Style.SelectionBackColor = Color.RoyalBlue;
+                editBtn.Style.SelectionForeColor = Color.White;
+
+                // Delete button
+                DataGridViewButtonCell deleteBtn =
+                    (DataGridViewButtonCell)row.Cells["Delete"];
+
+                deleteBtn.Style.BackColor = Color.Red;
+                deleteBtn.Style.ForeColor = Color.White;
+                deleteBtn.Style.SelectionBackColor = Color.DarkRed;
+                deleteBtn.Style.SelectionForeColor = Color.White;
+            }
+        }
+        async Task DeleteCar(int id)
+        {
+            try
+            {
+                if (id == 0)
+                {
+                    MessageBox.Show("Invalid car selected");
+                    return;
+                }
+
+                var result = MessageBox.Show(
+                    "Are you sure you want to delete this car?",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                await api.DeleteAsync($"api/Car/{id}");
+
+                Log.Warning("Car deleted: {Id}", id);
+
+                MessageBox.Show("Car deleted successfully");
+
+                await LoadCars();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to delete car.");
+                MessageBox.Show("Operation failed: " + ex.Message);
+            }
         }
 
         private async void btnAdd_Click(object sender, EventArgs e)
