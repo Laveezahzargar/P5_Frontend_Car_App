@@ -44,13 +44,13 @@
             label14 = new Label();
             txtName = new TextBox();
             txtPrice = new TextBox();
-            txtYear = new TextBox();
             cmbManufacturerId = new ComboBox();
             cmbEngineId = new ComboBox();
             cmbFueltype = new ComboBox();
             cmbTransmission = new ComboBox();
             dataGridViewCar = new DataGridView();
             button1 = new Button();
+            cmbYear = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)dataGridViewCar).BeginInit();
             SuspendLayout();
             // 
@@ -195,13 +195,6 @@
             txtPrice.Size = new Size(626, 27);
             txtPrice.TabIndex = 15;
             // 
-            // txtYear
-            // 
-            txtYear.Location = new Point(580, 307);
-            txtYear.Name = "txtYear";
-            txtYear.Size = new Size(626, 27);
-            txtYear.TabIndex = 16;
-            // 
             // cmbManufacturerId
             // 
             cmbManufacturerId.FormattingEnabled = true;
@@ -255,18 +248,26 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += btnAdd_Click;
             // 
+            // cmbYear
+            // 
+            cmbYear.FormattingEnabled = true;
+            cmbYear.Location = new Point(580, 306);
+            cmbYear.Name = "cmbYear";
+            cmbYear.Size = new Size(626, 28);
+            cmbYear.TabIndex = 23;
+            // 
             // Car_Form
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1355, 741);
+            Controls.Add(cmbYear);
             Controls.Add(button1);
             Controls.Add(dataGridViewCar);
             Controls.Add(cmbTransmission);
             Controls.Add(cmbFueltype);
             Controls.Add(cmbEngineId);
             Controls.Add(cmbManufacturerId);
-            Controls.Add(txtYear);
             Controls.Add(txtPrice);
             Controls.Add(txtName);
             Controls.Add(label14);
@@ -309,12 +310,12 @@
         private Label label14;
         private TextBox txtName;
         private TextBox txtPrice;
-        private TextBox txtYear;
         private ComboBox cmbManufacturerId;
         private ComboBox cmbEngineId;
         private ComboBox cmbFueltype;
         private ComboBox cmbTransmission;
         private DataGridView dataGridViewCar;
         private Button button1;
+        private ComboBox cmbYear;
     }
 }

@@ -223,6 +223,17 @@ namespace P5_Frontend_Car_App
                     description = txtDescription.Text
                 };
 
+                var manufacturers = await api.GetAsync<List<Manufacturer>>("Manufacturer");
+
+                bool exists = manufacturers.Any(m =>
+                    m.Name.ToLower() == txtName.Text.Trim().ToLower()
+                    && m.Id != selectedManufacturerId);
+
+                if (exists)
+                {
+                    MessageBox.Show("Manufacturer already exists");
+                    return;
+                }
                 if (selectedManufacturerId == 0)
                 {
                     // CREATE
@@ -235,6 +246,14 @@ namespace P5_Frontend_Car_App
                     await api.PutAsync($"Manufacturer/{selectedManufacturerId}", data);
                     Log.Information("User updated manufacturer: {ManufacturerId}, Name: {ManufacturerName}", selectedManufacturerId, txtName.Text);
                 }
+                await LoadManufacturers();
+
+                ResetForm();
+
+                MessageBox.Show(
+                    selectedManufacturerId == 0
+                    ? "Manufacturer added successfully"
+                    : "Manufacturer updated successfully");
 
             }
             catch (Exception ex)

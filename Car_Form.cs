@@ -49,6 +49,7 @@ namespace P5_Frontend_Car_App
             dataGridViewCar.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             LoadDropdowns();
+            LoadYears();
 
             await LoadManufacturers();
             await LoadEngineCapacity();
@@ -75,7 +76,7 @@ namespace P5_Frontend_Car_App
 
             txtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtPrice.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtYear.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbYear.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             cmbManufacturerId.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cmbEngineId.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
@@ -102,6 +103,17 @@ namespace P5_Frontend_Car_App
         {
             cmbTransmission.DataSource = Enum.GetValues(typeof(Transmission));
             cmbFueltype.DataSource = Enum.GetValues(typeof(FuelType));
+        }
+        void LoadYears()
+        {
+            cmbYear.Items.Clear();
+
+            for (int year = DateTime.Now.Year; year >= 1900; year--)
+            {
+                cmbYear.Items.Add(year);
+            }
+
+            cmbYear.SelectedIndex = 0;
         }
 
         async Task LoadCars()
@@ -217,7 +229,7 @@ namespace P5_Frontend_Car_App
 
             txtName.Text = row.Cells["Name"].Value.ToString();
             txtPrice.Text = row.Cells["Price"].Value.ToString();
-            txtYear.Text = row.Cells["Year"].Value.ToString();
+            cmbYear.Text = row.Cells["Year"].Value.ToString();
 
             cmbManufacturerId.SelectedValue = row.Cells["ManufacturerId"].Value;
             cmbEngineId.SelectedValue = row.Cells["EngineCapacityId"].Value;
@@ -294,16 +306,42 @@ namespace P5_Frontend_Car_App
                 }
 
                 if (!decimal.TryParse(txtPrice.Text, out var price) ||
-                    !int.TryParse(txtYear.Text, out var year))
+                    !int.TryParse(cmbYear.Text, out var year))
                 {
                     MessageBox.Show("Invalid price/year");
+                    return;
+                }
+
+                if (price <= 0)
+                {
+                    MessageBox.Show("Price cannot be negative or zero.");
+                    return;
+                }
+
+                if (year < 1900 || year > DateTime.Now.Year + 1)
+                {
+                    MessageBox.Show("Invalid year");
+                    return;
+                }
+
+                var cars = await api.GetAsync<List<Car>>("Car");
+
+                bool exists = cars.Any(c =>
+                    c.Name.Trim().ToLower() == txtName.Text.Trim().ToLower()
+                    && c.ManufacturerId == (int)cmbManufacturerId.SelectedValue
+                    && c.Year == year
+                    && c.Id != selectedCarId);
+
+                if (exists)
+                {
+                    MessageBox.Show("Car already exists");
                     return;
                 }
 
                 var car = new Car
                 {
                     Id = selectedCarId,
-                    Name = txtName.Text,
+                    Name = txtName.Text.Trim(),
                     ManufacturerId = (int)cmbManufacturerId.SelectedValue,
                     EngineCapacityId = (int)cmbEngineId.SelectedValue,
                     Transmission = (Transmission)cmbTransmission.SelectedItem,
@@ -341,7 +379,7 @@ namespace P5_Frontend_Car_App
 
             txtName.Clear();
             txtPrice.Clear();
-            txtYear.Clear();
+            cmbYear.SelectedIndex = 0;
 
             if (cmbManufacturerId.Items.Count > 0)
                 cmbManufacturerId.SelectedIndex = 0;

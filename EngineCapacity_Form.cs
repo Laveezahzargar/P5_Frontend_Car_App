@@ -210,12 +210,24 @@ namespace P5_Frontend_Car_App
                     MessageBox.Show("Fill all fields");
                     return;
                 }
+                var engines = await api.GetAsync<List<EngineCapacity>>("EngineCapacity");
+
+                bool exists = engines.Any(e =>
+                   (e.Name.Trim().ToLower() == txtName.Text.Trim().ToLower()
+                  ||e.Capacity.Trim().ToLower() == txtCapacity.Text.Trim().ToLower())
+                  && e.Id != selectedEngineId);
+
+                if (exists)
+                {
+                    MessageBox.Show("Engine name or capacity already exists");
+                    return;
+                }
 
                 var data = new EngineCapacity
                 {
-                    Name = txtName.Text,
-                    Description = txtDescription.Text,
-                    Capacity = txtCapacity.Text
+                    Name = txtName.Text.Trim(),
+                    Description = txtDescription.Text.Trim(),
+                    Capacity = txtCapacity.Text.Trim()
                 };
 
                 if (selectedEngineId == 0)
