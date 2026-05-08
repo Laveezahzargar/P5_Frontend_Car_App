@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace P5_Frontend_Car_App
 {
@@ -17,6 +18,8 @@ namespace P5_Frontend_Car_App
         int maxCardWidth = 260;
         int maxCardHeight = 140;
         ApiService api = new ApiService();
+
+        Chart chartCars = new Chart();
         public Dashboard()
         {
             InitializeComponent();
@@ -27,6 +30,8 @@ namespace P5_Frontend_Car_App
             ApplyTheme();
             StyleCards();
 
+            InitChart();
+
             panelCars.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             panelManufacturers.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             panelEngines.Anchor = AnchorStyles.Top | AnchorStyles.Left;
@@ -34,6 +39,47 @@ namespace P5_Frontend_Car_App
             panelAverage.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             panelFuel.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             panelYear.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+        }
+        private void InitChart()
+        {
+            chartCars.Parent = this;
+            chartCars.SetBounds(50, 400, 800, 300);
+
+            chartCars.ChartAreas.Clear();
+            chartCars.Series.Clear();
+
+            ChartArea area = new ChartArea("MainArea");
+            chartCars.ChartAreas.Add(area);
+
+            chartCars.BackColor = Color.White;
+            chartCars.BorderlineColor = Color.LightGray;
+            chartCars.BorderlineWidth = 1;
+
+            this.Controls.Add(chartCars);
+        }
+        void LoadBarChart(List<Car> cars)
+        {
+            chartCars.Series.Clear();
+
+            Series series = new Series("Cars")
+            {
+                ChartType = SeriesChartType.Column
+            };
+
+            var data = cars
+                .GroupBy(c => c.Manufacturer.Name)
+                .Select(g => new
+                {
+                    Name = g.Key,
+                    Count = g.Count()
+                });
+
+            foreach (var item in data)
+            {
+                series.Points.AddXY(item.Name, item.Count);
+            }
+
+            chartCars.Series.Add(series);
         }
         private void Dashboard_Resize(object sender, EventArgs e)
         {
@@ -69,6 +115,11 @@ namespace P5_Frontend_Car_App
             panelAverage.SetBounds(startX, y2, cardWidth, cardHeight);
             panelFuel.SetBounds(startX + (cardWidth + margin), y2, cardWidth, cardHeight);
             panelYear.SetBounds(startX + (cardWidth + margin) * 2, y2, cardWidth, cardHeight);
+
+            int chartY = y2 + cardHeight + 40;
+
+            int chartWidth = Math.Max(300, this.ClientSize.Width - (startX * 2));
+            chartCars.SetBounds(startX, chartY, chartWidth, 300);
         }
         private async void Dashboard_Form_Load(object sender, EventArgs e)
         {
@@ -153,6 +204,8 @@ namespace P5_Frontend_Car_App
                         .OrderByDescending(g => g.Count())
                         .Select(g => g.Key.ToString())
                         .FirstOrDefault() ?? "-";
+
+                LoadBarChart(cars);
             }
             catch (Exception ex)
             {
