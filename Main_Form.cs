@@ -1,10 +1,25 @@
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Services;
+
+
+
 namespace P5_Frontend_Car_App
 {
     public partial class Main_Form : Form
     {
-        public Main_Form()
+        private readonly IApiService api;
+        public Main_Form(IApiService apiService)
         {
             InitializeComponent();
+
+            api = apiService;
 
             Color bg = Color.White;
             Color panel = Color.FromArgb(245, 245, 245);
@@ -67,22 +82,22 @@ namespace P5_Frontend_Car_App
         }
         private void btnCars_Click(object sender, EventArgs e)
         {
-            Car_Form f = new Car_Form();
+            Car_Form f = new Car_Form(api);
             f.ShowDialog();
         }
         private void btnManf_Click(object sender, EventArgs e)
         {
-            Manufacturer_Form f = new Manufacturer_Form();
+            Manufacturer_Form f = new Manufacturer_Form(api);
             f.ShowDialog();
         }
         private void btnEngine_Click(object sender, EventArgs e)
         {
-            EngineCapacity_Form f = new EngineCapacity_Form();
+            EngineCapacity_Form f = new EngineCapacity_Form(api);
             f.ShowDialog();
         }
         private void btnDashboard_Click(object sender, EventArgs e)
         {
-            Dashboard f = new Dashboard();
+            Dashboard f = new Dashboard(api);
             f.ShowDialog();
         }
     }

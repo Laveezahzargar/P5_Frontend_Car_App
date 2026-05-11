@@ -10,20 +10,25 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using P5_Frontend_Car_App.Models;
 using Serilog;
+using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.Services;
+using P5_Frontend_Car_App.Interfaces;
 
 namespace P5_Frontend_Car_App
 {
     public partial class Manufacturer_Form : Form
     {
         int selectedManufacturerId = 0;
+        private readonly IApiService api;
 
-        public Manufacturer_Form()
+        public Manufacturer_Form(IApiService apiService)
         {
             InitializeComponent();
             this.AutoScroll = true;
+            api = apiService;
         }
 
-        private void Manufacturer_form_Load(object sender, EventArgs e)
+        private async void Manufacturer_form_Load(object sender, EventArgs e)
         {
             ApplyTheme();
             StyleButton(button1);
@@ -33,7 +38,7 @@ namespace P5_Frontend_Car_App
             dataGridViewManufacturer.AutoGenerateColumns = true;
             dataGridViewManufacturer.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            LoadManufacturers();
+            await LoadManufacturers();
         }
         void ApplyResponsiveLayout()
         {
@@ -96,9 +101,7 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var api = new ApiService();
-
-                var list = await api.GetAsync<List<Manufacturer>>("Manufacturer");
+                var list = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
 
                 dataGridViewManufacturer.DataSource = list;
 
@@ -142,7 +145,7 @@ namespace P5_Frontend_Car_App
             });
         }
 
-        private void dataGridViewManufacturer_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void dataGridViewManufacturer_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
@@ -151,7 +154,7 @@ namespace P5_Frontend_Car_App
 
             if (column == "ViewCars")
             {
-                var form = new Car_Form(id, null);
+                var form = new Car_Form(api, id, null);
                 form.ShowDialog();
             }
             else if (column == "Edit")
@@ -164,7 +167,7 @@ namespace P5_Frontend_Car_App
             }
             else if (column == "Delete")
             {
-                DeleteManufacturer(id);
+                await DeleteManufacturer(id);
             }
         }
         async Task DeleteManufacturer(int id)
@@ -185,8 +188,6 @@ namespace P5_Frontend_Car_App
 
                 if (confirm != DialogResult.Yes)
                     return;
-
-                var api = new ApiService();
 
                 await api.DeleteAsync($"Manufacturer/{id}");
 
@@ -215,15 +216,13 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
-                var api = new ApiService();
-
                 var data = new
                 {
                     name = txtName.Text,
                     description = txtDescription.Text
                 };
 
-                var manufacturers = await api.GetAsync<List<Manufacturer>>("Manufacturer");
+                var manufacturers = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
 
                 bool exists = manufacturers.Any(m =>
                     m.Name.ToLower() == txtName.Text.Trim().ToLower()

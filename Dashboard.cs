@@ -10,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.Services;
+using P5_Frontend_Car_App.Interfaces;
 
 namespace P5_Frontend_Car_App
 {
@@ -17,15 +20,18 @@ namespace P5_Frontend_Car_App
     {
         int maxCardWidth = 260;
         int maxCardHeight = 140;
-        ApiService api = new ApiService();
+        
+        private readonly IApiService api;
 
         Chart chartCars = new Chart();
-        public Dashboard()
+        public Dashboard(IApiService apiService )
         {
             InitializeComponent();
 
             this.AutoScroll = false;
             this.DoubleBuffered = true;
+            
+            api = apiService;
 
             ApplyTheme();
             StyleCards();
@@ -57,7 +63,7 @@ namespace P5_Frontend_Car_App
 
             this.Controls.Add(chartCars);
         }
-        void LoadBarChart(List<Car> cars)
+        void LoadBarChart(List<CarDto> cars)
         {
             chartCars.Series.Clear();
 
@@ -67,7 +73,7 @@ namespace P5_Frontend_Car_App
             };
 
             var data = cars
-                .GroupBy(c => c.Manufacturer.Name)
+                .GroupBy(c => c.Manufacturer)
                 .Select(g => new
                 {
                     Name = g.Key,
@@ -180,9 +186,9 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var cars = await api.GetAsync<List<Car>>("Car");
-                var manufacturers = await api.GetAsync<List<Manufacturer>>("Manufacturer");
-                var engines = await api.GetAsync<List<EngineCapacity>>("EngineCapacity");
+                var cars = await api.GetAsync<List<CarDto>>("Car");
+                var manufacturers = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
+                var engines = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
 
                 lblTotalCars.Text = cars.Count.ToString();
 

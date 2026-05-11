@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Serilog;
+using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.Interfaces;
 
 namespace P5_Frontend_Car_App
 {
@@ -18,16 +20,18 @@ namespace P5_Frontend_Car_App
         int selectedCarId = 0;
         int filterManufacturerId = 0;
         int filterEngineId = 0;
+        string selectedImagePath = "";
 
         int _manuId;
         int _engineId;
 
-        ApiService api = new ApiService();
+        private readonly IApiService api;
 
-        public Car_Form(int? manuId = null, int? engineId = null)
+        public Car_Form(IApiService apiService, int? manuId = null, int? engineId = null)
         {
             InitializeComponent();
             this.AutoScroll = true;
+            api = apiService;
 
             _manuId = manuId ?? 0;
             _engineId = engineId ?? 0;
@@ -120,7 +124,7 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<Car>>("Car");
+                var list = await api.GetAsync<List<CarDto>>("Car");
 
                 if (filterManufacturerId != 0)
                     list = list.Where(c => c.ManufacturerId == filterManufacturerId).ToList();
@@ -132,13 +136,22 @@ namespace P5_Frontend_Car_App
                 {
                     c.Id,
                     c.Name,
-                    Manufacturer = c.Manufacturer?.Name,
-                    Capacity = c.EngineCapacity?.Capacity,
+
+                    c.ManufacturerId,
+                    c.EngineCapacityId,
+
+                    Manufacturer = c.Manufacturer,
+                    Capacity = c.EngineCapacity,
+
                     c.Transmission,
                     c.FuelType,
+
                     c.Price,
-                    c.Year
+                    c.Year,
                 }).ToList();
+
+                dataGridViewCar.Columns["ManufacturerId"].Visible = false;
+                dataGridViewCar.Columns["EngineCapacityId"].Visible = false;
 
                 AddButtonsToGrid();
                 StyleGridButtons();
@@ -154,7 +167,7 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<Manufacturer>>("Manufacturer");
+                var list = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
 
                 cmbManufacturerId.DisplayMember = "Name";
                 cmbManufacturerId.ValueMember = "Id";
@@ -171,7 +184,7 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<EngineCapacity>>("EngineCapacity");
+                var list = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
 
                 cmbEngineId.DisplayMember = "Capacity";
                 cmbEngineId.ValueMember = "Id";
@@ -280,7 +293,7 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
-                await api.DeleteAsync($"api/Car/{id}");
+                await api.DeleteAsync($"Car/{id}");
 
                 Log.Warning("Car deleted: {Id}", id);
 
@@ -324,7 +337,7 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
-                var cars = await api.GetAsync<List<Car>>("Car");
+                var cars = await api.GetAsync<List<CarDto>>("Car");
 
                 bool exists = cars.Any(c =>
                     c.Name.Trim().ToLower() == txtName.Text.Trim().ToLower()
@@ -338,37 +351,75 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
-                var car = new Car
+                using var client = new HttpClient();
+                using var form = new MultipartFormDataContent();
+
+                form.Add(new StringContent(txtName.Text.Trim()), "Name");
+                form.Add(new StringContent(cmbManufacturerId.SelectedValue.ToString()), "ManufacturerId");
+                form.Add(new StringContent(cmbEngineId.SelectedValue.ToString()), "EngineCapacityId");
+
+                form.Add(new StringContent(cmbTransmission.SelectedItem.ToString()), "Transmission");
+                form.Add(new StringContent(cmbFueltype.SelectedItem.ToString()), "FuelType");
+
+                form.Add(new StringContent(price.ToString()), "Price");
+                form.Add(new StringContent(year.ToString()), "Year");
+
+                if (!string.IsNullOrEmpty(selectedImagePath))
                 {
-                    Id = selectedCarId,
-                    Name = txtName.Text.Trim(),
-                    ManufacturerId = (int)cmbManufacturerId.SelectedValue,
-                    EngineCapacityId = (int)cmbEngineId.SelectedValue,
-                    Transmission = (Transmission)cmbTransmission.SelectedItem,
-                    FuelType = (FuelType)cmbFueltype.SelectedItem,
-                    Price = price,
-                    Year = year
-                };
+                    var fileStream = File.OpenRead(selectedImagePath);
+
+                    var fileContent = new StreamContent(fileStream);
+                    fileContent.Headers.ContentType =
+                        new System.Net.Http.Headers.MediaTypeHeaderValue(
+                            Path.GetExtension(selectedImagePath).ToLower() == ".png"
+                                ? "image/png"
+                                : "image/jpeg"
+    );
+
+                    form.Add(fileContent, "Image", Path.GetFileName(selectedImagePath));
+                }
+
+                HttpResponseMessage response;
 
                 if (selectedCarId == 0)
                 {
-                    await api.PostAsync("Car", car);
+                    response = await client.PostAsync("http://localhost:5294/api/car", form);
                     Log.Information("User added new car: {CarName}", txtName.Text);
                 }
                 else
                 {
-                    await api.PutAsync($"Car/{selectedCarId}", car);
+                    response = await client.PutAsync($"http://localhost:5294/api/car/{selectedCarId}", form);
                     Log.Information("User updated car: {CarId}, Name: {CarName}", selectedCarId, txtName.Text);
                 }
-                   
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Failed: {error}");
+                    return;
+                }
 
                 ClearForm();
+                selectedImagePath = "";
                 await LoadCars();
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to add/update cars");
                 MessageBox.Show("Failed to add/update cars");
+            }
+        }
+
+        private void btnChooseImage_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Image Files|*.jpg;*.png;*.jpeg";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                selectedImagePath = dialog.FileName;
+
+                pictureBoxCar.Image = Image.FromFile(selectedImagePath);
             }
         }
 

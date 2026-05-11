@@ -9,18 +9,23 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using P5_Frontend_Car_App.Models;
 using Serilog;
+using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.Services;
+using P5_Frontend_Car_App.Interfaces;
 
 namespace P5_Frontend_Car_App
 {
     public partial class EngineCapacity_Form : Form
     {
         int selectedEngineId = 0;
-        ApiService api = new ApiService();
 
-        public EngineCapacity_Form()
+        private readonly IApiService api;
+
+        public EngineCapacity_Form(IApiService apiService)
         {
             InitializeComponent();
             this.AutoScroll = true;
+            api = apiService;
         }
 
         private async void EngineCapacity_form_Load(object sender, EventArgs e)
@@ -63,7 +68,7 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<EngineCapacity>>("EngineCapacity");
+                var list = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
 
                 dataGridViewEngine.DataSource = list
                     .Select(e => new
@@ -121,7 +126,7 @@ namespace P5_Frontend_Car_App
 
             if (col == "ViewCars")
             {
-                var form = new Car_Form(null, id);
+                var form = new Car_Form(api,null, id);
                 form.ShowDialog();
             }
             else if (col == "Edit")
@@ -210,7 +215,7 @@ namespace P5_Frontend_Car_App
                     MessageBox.Show("Fill all fields");
                     return;
                 }
-                var engines = await api.GetAsync<List<EngineCapacity>>("EngineCapacity");
+                var engines = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
 
                 bool exists = engines.Any(e =>
                    (e.Name.Trim().ToLower() == txtName.Text.Trim().ToLower()
@@ -223,7 +228,7 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
-                var data = new EngineCapacity
+                var data = new EngineCapacityDto
                 {
                     Name = txtName.Text.Trim(),
                     Description = txtDescription.Text.Trim(),

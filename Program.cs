@@ -1,5 +1,8 @@
 using Serilog;
 using Serilog.Events;
+using Microsoft.Extensions.DependencyInjection;
+using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Services;
 
 namespace P5_Frontend_Car_App
 {
@@ -44,7 +47,17 @@ namespace P5_Frontend_Car_App
                 };
 
                 ApplicationConfiguration.Initialize();
-                Application.Run(new Main_Form());
+
+                var services = new ServiceCollection();
+
+                services.AddHttpClient<IApiService, ApiService>();
+
+                services.AddTransient<Main_Form>();
+
+                var provider = services.BuildServiceProvider();
+
+                Application.Run(
+                    provider.GetRequiredService<Main_Form>());
             }
             catch (Exception ex)
             {

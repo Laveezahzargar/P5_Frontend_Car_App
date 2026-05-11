@@ -51,7 +51,12 @@
             dataGridViewCar = new DataGridView();
             button1 = new Button();
             cmbYear = new ComboBox();
+            radioButton1 = new RadioButton();
+            label15 = new Label();
+            label16 = new Label();
+            pictureBoxCar = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)dataGridViewCar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxCar).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -68,18 +73,18 @@
             label2.AutoSize = true;
             label2.Location = new Point(349, 115);
             label2.Name = "label2";
-            label2.Size = new Size(116, 20);
+            label2.Size = new Size(97, 20);
             label2.TabIndex = 1;
-            label2.Text = "Manufacturer_Id";
+            label2.Text = "Manufacturer";
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Location = new Point(349, 154);
             label3.Name = "label3";
-            label3.Size = new Size(130, 20);
+            label3.Size = new Size(115, 20);
             label3.TabIndex = 2;
-            label3.Text = "EngineCapacity_Id";
+            label3.Text = "Engine Capacity";
             // 
             // label4
             // 
@@ -231,16 +236,16 @@
             // dataGridViewCar
             // 
             dataGridViewCar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCar.Location = new Point(57, 398);
+            dataGridViewCar.Location = new Point(57, 475);
             dataGridViewCar.Name = "dataGridViewCar";
             dataGridViewCar.RowHeadersWidth = 51;
-            dataGridViewCar.Size = new Size(1239, 331);
+            dataGridViewCar.Size = new Size(1239, 254);
             dataGridViewCar.TabIndex = 21;
             dataGridViewCar.CellContentClick += dataGridViewCar_CellContentClick;
             // 
             // button1
             // 
-            button1.Location = new Point(1048, 340);
+            button1.Location = new Point(1055, 412);
             button1.Name = "button1";
             button1.Size = new Size(100, 42);
             button1.TabIndex = 22;
@@ -256,11 +261,55 @@
             cmbYear.Size = new Size(626, 28);
             cmbYear.TabIndex = 23;
             // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.Location = new Point(580, 352);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(123, 24);
+            radioButton1.TabIndex = 24;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "choose Image";
+            radioButton1.UseVisualStyleBackColor = true;
+            radioButton1.Click += btnChooseImage_Click;
+            // 
+            // label15
+            // 
+            label15.AutoSize = true;
+            label15.Location = new Point(349, 354);
+            label15.Name = "label15";
+            label15.Size = new Size(51, 20);
+            label15.TabIndex = 25;
+            label15.Text = "Image";
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new Point(163, 356);
+            label16.Name = "label16";
+            label16.Size = new Size(24, 20);
+            label16.TabIndex = 26;
+            label16.Text = "8 .";
+            // 
+            // pictureBoxCar
+            // 
+            pictureBoxCar.BorderStyle = BorderStyle.FixedSingle;
+            pictureBoxCar.Location = new Point(709, 340);
+            pictureBoxCar.Name = "pictureBoxCar";
+            pictureBoxCar.Size = new Size(150, 120);
+            pictureBoxCar.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBoxCar.TabIndex = 27;
+            pictureBoxCar.TabStop = false;
+            // 
             // Car_Form
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1355, 741);
+            Controls.Add(pictureBoxCar);
+            Controls.Add(label16);
+            Controls.Add(label15);
+            Controls.Add(radioButton1);
             Controls.Add(cmbYear);
             Controls.Add(button1);
             Controls.Add(dataGridViewCar);
@@ -288,6 +337,7 @@
             Text = "Car_Form";
             Load += Car_form_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridViewCar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxCar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -317,5 +367,9 @@
         private DataGridView dataGridViewCar;
         private Button button1;
         private ComboBox cmbYear;
+        private RadioButton radioButton1;
+        private Label label15;
+        private Label label16;
+        private PictureBox pictureBoxCar;
     }
 }
