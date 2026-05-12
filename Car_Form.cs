@@ -336,6 +336,11 @@ namespace P5_Frontend_Car_App
                     MessageBox.Show("Invalid year");
                     return;
                 }
+                if (string.IsNullOrEmpty(selectedImagePath))
+                {
+                    MessageBox.Show("Please select an image");
+                    return;
+                }
 
                 var cars = await api.GetAsync<List<CarDto>>("Car");
 
@@ -408,7 +413,7 @@ namespace P5_Frontend_Car_App
                 Log.Error(ex, "Failed to add/update cars");
                 MessageBox.Show("Failed to add/update cars");
             }
-        }
+          }
 
         private void btnChooseImage_Click(object sender, EventArgs e)
         {
