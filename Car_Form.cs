@@ -148,10 +148,13 @@ namespace P5_Frontend_Car_App
 
                     c.Price,
                     c.Year,
+
+                    c.ImageUrl
                 }).ToList();
 
                 dataGridViewCar.Columns["ManufacturerId"].Visible = false;
                 dataGridViewCar.Columns["EngineCapacityId"].Visible = false;
+                dataGridViewCar.Columns["ImageUrl"].Visible = false;
 
                 AddButtonsToGrid();
                 StyleGridButtons();
@@ -246,6 +249,12 @@ namespace P5_Frontend_Car_App
 
             cmbManufacturerId.SelectedValue = row.Cells["ManufacturerId"].Value;
             cmbEngineId.SelectedValue = row.Cells["EngineCapacityId"].Value;
+
+            cmbFueltype.Text = row.Cells["FuelType"].Value.ToString();
+            cmbTransmission.Text = row.Cells["Transmission"].Value.ToString();
+
+            //txtImagePath.Text = row.Cells["ImageUrl"].Value.ToString();
+            pictureBoxCar.ImageLocation = row.Cells["ImageUrl"].Value.ToString();
 
             button1.Text = "Update";
         }
@@ -381,7 +390,7 @@ namespace P5_Frontend_Car_App
                                 : "image/jpeg"
     );
 
-                    form.Add(fileContent, "Image", Path.GetFileName(selectedImagePath));
+                    form.Add(fileContent, "ImageUrl", Path.GetFileName(selectedImagePath));
                 }
 
                 HttpResponseMessage response;

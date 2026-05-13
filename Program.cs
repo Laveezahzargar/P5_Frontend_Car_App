@@ -54,10 +54,12 @@ namespace P5_Frontend_Car_App
 
                 services.AddTransient<Main_Form>();
 
+                services.AddTransient<Welcome_Form>();
+
                 var provider = services.BuildServiceProvider();
 
                 Application.Run(
-                    provider.GetRequiredService<Main_Form>());
+                    provider.GetRequiredService<Welcome_Form>());
             }
             catch (Exception ex)
             {
