@@ -107,6 +107,11 @@ namespace P5_Frontend_Car_App
             var signUp_form = new SignUp_Form();
             signUp_form.ShowDialog();
         }
+        private void btnSignIn_Click(object sender, EventArgs e)
+        {
+            var signIn_form = new SignIn_Form();
+            signIn_form.ShowDialog();
+        }
         private void label1_Click(object sender, EventArgs e)
         {
 

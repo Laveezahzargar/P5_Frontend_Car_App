@@ -42,8 +42,8 @@
             txtConfirmPassword = new TextBox();
             lblFooter = new Label();
             btnSignUp = new Button();
-            btnSignIn = new Button();
             lblInfo = new Label();
+            linkLogin = new LinkLabel();
             SuspendLayout();
             // 
             // lblTitle
@@ -148,7 +148,7 @@
             // lblFooter
             // 
             lblFooter.AutoSize = true;
-            lblFooter.Location = new Point(548, 538);
+            lblFooter.Location = new Point(539, 501);
             lblFooter.Name = "lblFooter";
             lblFooter.Size = new Size(303, 20);
             lblFooter.TabIndex = 12;
@@ -164,31 +164,35 @@
             btnSignUp.UseVisualStyleBackColor = true;
             btnSignUp.Click += btnSignUp_Click;
             // 
-            // btnSignIn
-            // 
-            btnSignIn.Location = new Point(656, 454);
-            btnSignIn.Name = "btnSignIn";
-            btnSignIn.Size = new Size(72, 29);
-            btnSignIn.TabIndex = 14;
-            btnSignIn.Text = "Sign In";
-            btnSignIn.UseVisualStyleBackColor = true;
-            // 
             // lblInfo
             // 
             lblInfo.AutoSize = true;
-            lblInfo.Location = new Point(601, 416);
+            lblInfo.Location = new Point(601, 390);
             lblInfo.Name = "lblInfo";
             lblInfo.Size = new Size(182, 20);
             lblInfo.TabIndex = 15;
             lblInfo.Text = "Already have an account ?";
+            // 
+            // linkLogin
+            // 
+            linkLogin.AutoSize = true;
+            linkLogin.LinkBehavior = LinkBehavior.NeverUnderline;
+            linkLogin.LinkColor = Color.DimGray;
+            linkLogin.Location = new Point(661, 420);
+            linkLogin.Name = "linkLogin";
+            linkLogin.Size = new Size(46, 20);
+            linkLogin.TabIndex = 16;
+            linkLogin.TabStop = true;
+            linkLogin.Text = "Login";
+            linkLogin.Click += btnLogin_Click;
             // 
             // SignUp_Form
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1432, 733);
+            Controls.Add(linkLogin);
             Controls.Add(lblInfo);
-            Controls.Add(btnSignIn);
             Controls.Add(btnSignUp);
             Controls.Add(lblFooter);
             Controls.Add(txtConfirmPassword);
@@ -226,7 +230,7 @@
         private TextBox txtConfirmPassword;
         private Label lblFooter;
         private Button btnSignUp;
-        private Button btnSignIn;
         private Label lblInfo;
+        private LinkLabel linkLogin;
     }
 }

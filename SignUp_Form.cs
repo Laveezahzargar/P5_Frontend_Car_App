@@ -168,7 +168,12 @@ namespace P5_Frontend_Car_App
             txtPassword.Clear();
             txtConfirmPassword.Clear();
         }
-       
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            var signIn_form = new SignIn_Form();
+            signIn_form.ShowDialog();
+        }
+
 
         private void label4_Click(object sender, EventArgs e)
         {
