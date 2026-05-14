@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Serilog;
 
 
 namespace P5_Frontend_Car_App
@@ -30,6 +31,7 @@ namespace P5_Frontend_Car_App
             StyleTextBox(txtPassword);
 
             txtPassword.PasswordChar = '*';
+            chkShowPassword.Checked = false;
 
             txtUsername.Focus();
         }
@@ -113,7 +115,6 @@ namespace P5_Frontend_Car_App
                 btnLogin.Enabled = false;
                 btnLogin.Text = "Please wait...";
 
-                using (var client = new HttpClient())
                 {
                     var form = new MultipartFormDataContent
                     {
@@ -127,9 +128,17 @@ namespace P5_Frontend_Car_App
                             "Password"
                         }
                     };
+                    var cookies = new CookieContainer();
 
+                    var handler = new HttpClientHandler
+                    {
+                        CookieContainer = cookies,
+                        UseCookies = true
+                    };
+
+                    using var client = new HttpClient(handler);
                     var response = await client.PostAsync(
-                        "http://localhost:5294/api/auth/login",
+                        "http://localhost:5294/api/user/login",
                         form);
 
                     if (!response.IsSuccessStatusCode)
@@ -147,7 +156,20 @@ namespace P5_Frontend_Car_App
 
                         return;
                     }
+                    // VIEW COOKIES
+                    var uri =
+                        new Uri("http://localhost:5294");
 
+                    var cookieCollection =
+                        cookies.GetCookies(uri);
+
+                    foreach (Cookie cookie in cookieCollection)
+                    {
+                        Log.Information(
+                            "Cookie -> {Name} = {Value}",
+                            cookie.Name,
+                            cookie.Value);
+                    }
                     MessageBox.Show(
                         "Login successful!",
                         "Success",
@@ -157,6 +179,9 @@ namespace P5_Frontend_Car_App
                     Log.Information(
                         "User {Username} logged in successfully",
                         txtUsername.Text.Trim());
+
+                    txtUsername.Clear();
+                    txtPassword.Clear();
                 }
             }
             catch (Exception ex)
@@ -176,9 +201,7 @@ namespace P5_Frontend_Car_App
             }
         }
 
-        private void chkShowPassword_CheckedChanged(
-            object sender,
-            EventArgs e)
+        private void chkShowPassword_CheckedChanged( object sender,  EventArgs e)
         {
             txtPassword.PasswordChar =
                 chkShowPassword.Checked ? '\0' : '*';

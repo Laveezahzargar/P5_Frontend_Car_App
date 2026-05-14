@@ -135,7 +135,7 @@ namespace P5_Frontend_Car_App
         };
 
                 var response = await client.PostAsync(
-                    "http://localhost:5294/api/auth/register",
+                    "http://localhost:5294/api/user",
                     form);
 
                 if (!response.IsSuccessStatusCode)
