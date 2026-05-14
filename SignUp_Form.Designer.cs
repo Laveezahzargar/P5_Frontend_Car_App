@@ -133,10 +133,11 @@
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(670, 236);
+            txtPassword.Location = new Point(670, 231);
             txtPassword.Name = "txtPassword";
             txtPassword.Size = new Size(201, 27);
             txtPassword.TabIndex = 10;
+            txtPassword.UseSystemPasswordChar = true;
             // 
             // txtConfirmPassword
             // 
@@ -144,6 +145,7 @@
             txtConfirmPassword.Name = "txtConfirmPassword";
             txtConfirmPassword.Size = new Size(201, 27);
             txtConfirmPassword.TabIndex = 11;
+            txtConfirmPassword.UseSystemPasswordChar = true;
             // 
             // lblFooter
             // 
