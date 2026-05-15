@@ -21,6 +21,8 @@ namespace P5_Frontend_Car_App
 
             _api = apiService;
 
+            this.Width = 1550;
+
             InitLayout();
         }
         private FlowLayoutPanel flow;
