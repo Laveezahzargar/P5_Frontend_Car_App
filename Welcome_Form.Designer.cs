@@ -37,6 +37,7 @@
             lblFooter = new Label();
             btnSignIn = new Button();
             btnSignUp = new Button();
+            btnExploreCars = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxBanner).BeginInit();
             SuspendLayout();
             // 
@@ -61,7 +62,7 @@
             // 
             // btnHomepage
             // 
-            btnHomepage.Location = new Point(619, 565);
+            btnHomepage.Location = new Point(550, 536);
             btnHomepage.Name = "btnHomepage";
             btnHomepage.Size = new Size(138, 49);
             btnHomepage.TabIndex = 2;
@@ -71,7 +72,7 @@
             // 
             // btnExit
             // 
-            btnExit.Location = new Point(641, 620);
+            btnExit.Location = new Point(654, 591);
             btnExit.Name = "btnExit";
             btnExit.Size = new Size(94, 49);
             btnExit.TabIndex = 3;
@@ -82,9 +83,9 @@
             // pictureBoxBanner
             // 
             pictureBoxBanner.Image = (Image)resources.GetObject("pictureBoxBanner.Image");
-            pictureBoxBanner.Location = new Point(304, 181);
+            pictureBoxBanner.Location = new Point(262, 156);
             pictureBoxBanner.Name = "pictureBoxBanner";
-            pictureBoxBanner.Size = new Size(815, 362);
+            pictureBoxBanner.Size = new Size(943, 356);
             pictureBoxBanner.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBoxBanner.TabIndex = 4;
             pictureBoxBanner.TabStop = false;
@@ -92,7 +93,7 @@
             // lblFooter
             // 
             lblFooter.AutoSize = true;
-            lblFooter.Location = new Point(538, 701);
+            lblFooter.Location = new Point(550, 681);
             lblFooter.Name = "lblFooter";
             lblFooter.Size = new Size(303, 20);
             lblFooter.TabIndex = 5;
@@ -118,11 +119,22 @@
             btnSignUp.UseVisualStyleBackColor = true;
             btnSignUp.Click += btnSignUp_Click;
             // 
+            // btnExploreCars
+            // 
+            btnExploreCars.Location = new Point(715, 536);
+            btnExploreCars.Name = "btnExploreCars";
+            btnExploreCars.Size = new Size(138, 49);
+            btnExploreCars.TabIndex = 8;
+            btnExploreCars.Text = "Explore Cars";
+            btnExploreCars.UseVisualStyleBackColor = true;
+            btnExploreCars.Click += btnExploreCars_Click;
+            // 
             // Welcome_Form
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1468, 741);
+            Controls.Add(btnExploreCars);
             Controls.Add(btnSignUp);
             Controls.Add(btnSignIn);
             Controls.Add(lblFooter);
@@ -148,5 +160,6 @@
         private Label lblFooter;
         private Button btnSignIn;
         private Button btnSignUp;
+        private Button btnExploreCars;
     }
 }

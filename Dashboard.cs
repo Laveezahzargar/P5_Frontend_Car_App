@@ -41,6 +41,7 @@ namespace P5_Frontend_Car_App
             panelCars.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             panelManufacturers.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             panelEngines.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            panelUser.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 
             panelAverage.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             panelFuel.Anchor = AnchorStyles.Top | AnchorStyles.Left;
@@ -95,7 +96,7 @@ namespace P5_Frontend_Car_App
         {
             int margin = 20;
 
-            int cols = 3;
+            int cols = 4;
             int rows = 2;
 
             int availableWidth = this.ClientSize.Width - (margin * (cols + 1));
@@ -114,6 +115,7 @@ namespace P5_Frontend_Car_App
             panelCars.SetBounds(startX, y1, cardWidth, cardHeight);
             panelManufacturers.SetBounds(startX + (cardWidth + margin), y1, cardWidth, cardHeight);
             panelEngines.SetBounds(startX + (cardWidth + margin) * 2, y1, cardWidth, cardHeight);
+            panelUser.SetBounds(startX + (cardWidth + margin) * 3, y1, cardWidth, cardHeight);
 
             // Row 2
             int y2 = y1 + cardHeight + margin;
@@ -143,6 +145,7 @@ namespace P5_Frontend_Car_App
         }
         void StyleCards()
         {
+            panelUser.Controls.Add(lblTotalUsers);
             panelCars.Controls.Add(lblTotalCars);
             panelManufacturers.Controls.Add(lblTotalManufacturers);
             panelEngines.Controls.Add(lblTotalEngines);
@@ -150,6 +153,7 @@ namespace P5_Frontend_Car_App
             panelFuel.Controls.Add(lblTopFuel);
             panelYear.Controls.Add(lblNewestYear);
 
+            StylePanel(panelUser);
             StylePanel(panelCars);
             StylePanel(panelManufacturers);
             StylePanel(panelEngines);
@@ -157,6 +161,7 @@ namespace P5_Frontend_Car_App
             StylePanel(panelFuel);
             StylePanel(panelYear);
 
+            StyleValueLabel(lblTotalUsers);
             StyleValueLabel(lblTotalCars);
             StyleValueLabel(lblTotalManufacturers);
             StyleValueLabel(lblTotalEngines);
@@ -189,6 +194,9 @@ namespace P5_Frontend_Car_App
                 var cars = await api.GetAsync<List<CarDto>>("Car");
                 var manufacturers = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
                 var engines = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
+                var users = await api.GetAsync<List<UserDto>>("User");
+
+                lblTotalUsers.Text = users.Count.ToString();
 
                 lblTotalCars.Text = cars.Count.ToString();
 

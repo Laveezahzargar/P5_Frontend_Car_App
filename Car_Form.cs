@@ -390,7 +390,7 @@ namespace P5_Frontend_Car_App
                                 : "image/jpeg"
     );
 
-                    form.Add(fileContent, "ImageUrl", Path.GetFileName(selectedImagePath));
+                    form.Add(fileContent, "Image", Path.GetFileName(selectedImagePath));
                 }
 
                 HttpResponseMessage response;
@@ -453,6 +453,12 @@ namespace P5_Frontend_Car_App
                 cmbEngineId.SelectedIndex = 0;
             cmbTransmission.SelectedIndex = 0;
             cmbFueltype.SelectedIndex = 0;
+
+            // clear image
+            selectedImagePath = "";
+
+            pictureBoxCar.Image?.Dispose();
+            pictureBoxCar.Image = null;
         }
 
         private async void btnShowAll_Click(object sender, EventArgs e)

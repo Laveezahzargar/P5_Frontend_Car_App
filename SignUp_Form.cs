@@ -1,22 +1,27 @@
-﻿using System;
+﻿using P5_Frontend_Car_App.Interfaces;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Serilog;
-using System.Net.Http;
 
 namespace P5_Frontend_Car_App
 {
     public partial class SignUp_Form : Form
     {
-        public SignUp_Form()
+        private readonly IApiService _api;
+        public SignUp_Form(IApiService apiService)
         {
             InitializeComponent();
+
+            _api=apiService;
         }
         private void SignUp_Form_Load(object sender, EventArgs e)
         {
@@ -124,7 +129,18 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
-                using var client = new HttpClient();
+                btnSignUp.Enabled = false;
+                btnSignUp.Text = "Please wait...";
+
+                var cookies = new CookieContainer();
+
+                var handler = new HttpClientHandler
+                {
+                    CookieContainer = cookies,
+                    UseCookies = true
+                };
+
+                using var client = new HttpClient(handler);
 
                 var form = new MultipartFormDataContent
         {
@@ -149,10 +165,30 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
+                var uri =
+                       new Uri("http://localhost:5294");
+
+                var cookieCollection =
+                    cookies.GetCookies(uri);
+
+                foreach (Cookie cookie in cookieCollection)
+                {
+                    Log.Information(
+                        "Cookie -> {Name} = {Value}",
+                        cookie.Name,
+                        cookie.Value);
+                }
+
                 MessageBox.Show("Account created successfully");
                 Log.Information("User {Username} registered successfully", txtUsername.Text.Trim());
 
+                Welcome_Form welcome = new Welcome_Form(_api);
+                welcome.ShowDialog();
+
                 ClearForm();
+
+                btnSignUp.Enabled = true;
+                btnSignUp.Text = "Sign Up";
             }
             catch (Exception ex)
             {
@@ -170,7 +206,7 @@ namespace P5_Frontend_Car_App
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            var signIn_form = new SignIn_Form();
+            var signIn_form = new SignIn_Form(_api);
             signIn_form.ShowDialog();
         }
 

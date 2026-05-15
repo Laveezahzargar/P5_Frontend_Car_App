@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using P5_Frontend_Car_App.Interfaces;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,9 +17,12 @@ namespace P5_Frontend_Car_App
 {
     public partial class SignIn_Form : Form
     {
-        public SignIn_Form()
+        private readonly IApiService _api;
+        public SignIn_Form(IApiService apiService)
         {
             InitializeComponent();
+
+            _api = apiService;
         }
         private void SignIn_Form_Load(object sender, EventArgs e)
         {
@@ -180,6 +184,9 @@ namespace P5_Frontend_Car_App
                         "User {Username} logged in successfully",
                         txtUsername.Text.Trim());
 
+                    Welcome_Form welcome = new Welcome_Form(_api);
+                    welcome.ShowDialog();
+
                     txtUsername.Clear();
                     txtPassword.Clear();
                 }
@@ -209,8 +216,8 @@ namespace P5_Frontend_Car_App
 
         private void btnRegister_Click(object sender, EventArgs e)
         {
-            var signUp_form = new SignUp_Form();
-            signUp_form.ShowDialog();
+            var SignUp_form = new SignUp_Form(_api);
+            SignUp_form.ShowDialog();
         }
 
         private void label1_Click(object sender, EventArgs e)

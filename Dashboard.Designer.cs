@@ -46,12 +46,16 @@
             lblTopFuel = new Label();
             panelYear = new Panel();
             lblNewestYear = new Label();
+            label1 = new Label();
+            lblTotalUsers = new Label();
+            panelUser = new Panel();
             panelCars.SuspendLayout();
             panelManufacturers.SuspendLayout();
             panelEngines.SuspendLayout();
             panelAverage.SuspendLayout();
             panelFuel.SuspendLayout();
             panelYear.SuspendLayout();
+            panelUser.SuspendLayout();
             SuspendLayout();
             // 
             // label
@@ -217,11 +221,39 @@
             lblNewestYear.TabIndex = 6;
             lblNewestYear.Text = "label6";
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(34, 17);
+            label1.Name = "label1";
+            label1.Size = new Size(81, 20);
+            label1.TabIndex = 12;
+            label1.Text = "Total Users";
+            // 
+            // lblTotalUsers
+            // 
+            lblTotalUsers.AutoSize = true;
+            lblTotalUsers.Location = new Point(301, 17);
+            lblTotalUsers.Name = "lblTotalUsers";
+            lblTotalUsers.Size = new Size(50, 20);
+            lblTotalUsers.TabIndex = 13;
+            lblTotalUsers.Text = "label2";
+            // 
+            // panelUser
+            // 
+            panelUser.Controls.Add(label1);
+            panelUser.Controls.Add(lblTotalUsers);
+            panelUser.Location = new Point(271, 425);
+            panelUser.Name = "panelUser";
+            panelUser.Size = new Size(769, 52);
+            panelUser.TabIndex = 14;
+            // 
             // Dashboard
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1358, 739);
+            Controls.Add(panelUser);
             Controls.Add(panelYear);
             Controls.Add(panelFuel);
             Controls.Add(panelAverage);
@@ -244,6 +276,8 @@
             panelFuel.PerformLayout();
             panelYear.ResumeLayout(false);
             panelYear.PerformLayout();
+            panelUser.ResumeLayout(false);
+            panelUser.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -267,5 +301,8 @@
         private Label lblAveragePrice;
         private Label lblTopFuel;
         private Label lblNewestYear;
+        private Label label1;
+        private Label lblTotalUsers;
+        private Panel panelUser;
     }
 }

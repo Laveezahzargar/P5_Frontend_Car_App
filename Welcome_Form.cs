@@ -20,6 +20,7 @@ namespace P5_Frontend_Car_App
             api = apiService;
 
             StyleButton(btnHomepage);
+            StyleButton(btnExploreCars);
             StyleButton(btnExit);
 
             ApplyTheme();
@@ -76,19 +77,22 @@ namespace P5_Frontend_Car_App
             pictureBoxBanner.Anchor = AnchorStyles.None;
 
             btnHomepage.Anchor = AnchorStyles.None;
+            btnExploreCars.Anchor = AnchorStyles.None;
             btnExit.Anchor = AnchorStyles.None;
 
             lblFooter.Anchor = AnchorStyles.None;
 
             btnHomepage.Margin = new Padding(0, 15, 0, 10);
+            btnExploreCars.Margin = new Padding(0, 15, 0, 10);
             btnExit.Margin = new Padding(0, 10, 0, 20);
 
             layout.Controls.Add(lblTitle, 0, 1);
             layout.Controls.Add(lblTagline, 0, 2);
             layout.Controls.Add(pictureBoxBanner, 0, 3);
             layout.Controls.Add(btnHomepage, 0, 4);
-            layout.Controls.Add(btnExit, 0, 5);
-            layout.Controls.Add(lblFooter, 0, 6);
+            layout.Controls.Add(btnExploreCars, 0, 5);
+            layout.Controls.Add(btnExit, 0, 6);
+            layout.Controls.Add(lblFooter, 0, 7);
 
             this.Controls.Add(layout);
         }
@@ -98,18 +102,23 @@ namespace P5_Frontend_Car_App
             var main_form = new Main_Form(api);
             main_form.ShowDialog();
         }
+        private void btnExploreCars_Click(object sender, EventArgs e)
+        {
+            var explore_form = new Explore_Form(api);
+            explore_form.ShowDialog();
+        }
         private void btnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
         private void btnSignUp_Click(object sender, EventArgs e)
         {
-            var signUp_form = new SignUp_Form();
+            var signUp_form = new SignUp_Form(api);
             signUp_form.ShowDialog();
         }
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            var signIn_form = new SignIn_Form();
+            var signIn_form = new SignIn_Form(api);
             signIn_form.ShowDialog();
         }
         private void label1_Click(object sender, EventArgs e)
