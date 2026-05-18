@@ -52,14 +52,13 @@ namespace P5_Frontend_Car_App
 
                 services.AddHttpClient<IApiService, ApiService>();
 
-                services.AddTransient<Main_Form>();
-
-                services.AddTransient<Welcome_Form>();
-
                 var provider = services.BuildServiceProvider();
 
-                Application.Run(
-                    provider.GetRequiredService<Welcome_Form>());
+                // Resolve only the service
+                var apiService = provider.GetRequiredService<IApiService>();
+
+                // Pass role manually
+                Application.Run(new SignUp_Form(apiService)); // or "customer"
             }
             catch (Exception ex)
             {

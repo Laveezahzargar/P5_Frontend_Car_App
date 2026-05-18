@@ -115,6 +115,7 @@ namespace P5_Frontend_Car_App
                         x.FullName,
                         x.Email,
                         x.Username,
+                        x.Role,
                         x.CreatedAt
                     }).ToList();
 
@@ -229,11 +230,7 @@ namespace P5_Frontend_Car_App
                             "Username"
                         },
 
-                        {
-                            new StringContent(
-                                txtPassword.Text),
-                            "Password"
-                        }
+                        { new StringContent("customer"), "Role" }
                     };
 
                 using var client = new HttpClient();

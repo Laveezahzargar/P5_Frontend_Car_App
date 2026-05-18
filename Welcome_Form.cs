@@ -1,4 +1,5 @@
 ﻿using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Types;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +15,8 @@ namespace P5_Frontend_Car_App
     public partial class Welcome_Form : Form
     {
         private readonly IApiService api;
-        public Welcome_Form(IApiService apiService)
+        private Role _role;
+        public Welcome_Form(IApiService apiService, Role role)
         {
             InitializeComponent();
             api = apiService;
@@ -25,6 +27,7 @@ namespace P5_Frontend_Car_App
 
             ApplyTheme();
             ApplyResponsiveLayout();
+            _role = role;
         }
         private void ApplyTheme()
         {
@@ -96,7 +99,17 @@ namespace P5_Frontend_Car_App
 
             this.Controls.Add(layout);
         }
-
+        private void WelcomeForm_Load(object sender, EventArgs e)
+        {
+            if (_role == Role.Customer)
+            {
+                btnHomepage.Visible = false; // hide button
+            }
+            else if (_role == Role.Admin)
+            {
+                btnHomepage.Visible = true; // show button
+            }
+        }
         private void btnHomepage_Click(object sender, EventArgs e)
         {
             var main_form = new Main_Form(api);

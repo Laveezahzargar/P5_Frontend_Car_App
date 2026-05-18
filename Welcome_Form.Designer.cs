@@ -145,6 +145,7 @@
             Controls.Add(lblTitle);
             Name = "Welcome_Form";
             Text = "Welcome_Form";
+            Load += WelcomeForm_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBoxBanner).EndInit();
             ResumeLayout(false);
             PerformLayout();

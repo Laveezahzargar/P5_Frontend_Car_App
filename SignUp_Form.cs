@@ -1,4 +1,6 @@
-﻿using P5_Frontend_Car_App.Interfaces;
+﻿using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Types;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -182,8 +185,19 @@ namespace P5_Frontend_Car_App
                 MessageBox.Show("Account created successfully");
                 Log.Information("User {Username} registered successfully", txtUsername.Text.Trim());
 
-                Welcome_Form welcome = new Welcome_Form(_api);
+                var json = await response.Content.ReadAsStringAsync();
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                var responseObj = JsonSerializer.Deserialize<ApiResponse<LoginResponseDto>>(json, options);
+                var loginData = responseObj?.Data;
+
+                Role roleEnum = loginData?.Role ?? Role.Customer;
+
+                Welcome_Form welcome = new Welcome_Form(_api, roleEnum);
                 welcome.ShowDialog();
+                this.Hide();
 
                 ClearForm();
 
