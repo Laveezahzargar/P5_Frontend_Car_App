@@ -165,6 +165,9 @@ namespace P5_Frontend_Car_App
 
                     ClearForm();
 
+                    btnSignUp.Enabled = true;
+                    btnSignUp.Text = "Sign Up";
+
                     return;
                 }
 
@@ -186,23 +189,21 @@ namespace P5_Frontend_Car_App
                 Log.Information("User {Username} registered successfully", txtUsername.Text.Trim());
 
                 var json = await response.Content.ReadAsStringAsync();
+                MessageBox.Show(json);
                 var options = new System.Text.Json.JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 };
-                var responseObj = JsonSerializer.Deserialize<ApiResponse<LoginResponseDto>>(json, options);
-                var loginData = responseObj?.Data;
 
-                Role roleEnum = loginData?.Role ?? Role.Customer;
+                Role roleEnum = Role.Customer;
 
                 Welcome_Form welcome = new Welcome_Form(_api, roleEnum);
                 welcome.ShowDialog();
-                this.Hide();
-
-                ClearForm();
 
                 btnSignUp.Enabled = true;
                 btnSignUp.Text = "Sign Up";
+
+                ClearForm();
             }
             catch (Exception ex)
             {

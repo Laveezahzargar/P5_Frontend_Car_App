@@ -193,7 +193,7 @@ namespace P5_Frontend_Car_App
                     {
                         PropertyNameCaseInsensitive = true
                     };
-
+                    MessageBox.Show(json);
                     var responseObj = JsonSerializer.Deserialize<ApiResponse<LoginResponseDto>>(json, options);
                     var loginData = responseObj?.Data;
 
