@@ -154,8 +154,10 @@ namespace P5_Frontend_Car_App
 
             if (column == "ViewCars")
             {
+                this.Hide();
                 var form = new Car_Form(api, id, null);
                 form.ShowDialog();
+                this.Show();
             }
             else if (column == "Edit")
             {

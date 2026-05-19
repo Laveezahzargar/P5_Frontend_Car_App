@@ -189,7 +189,6 @@ namespace P5_Frontend_Car_App
                 Log.Information("User {Username} registered successfully", txtUsername.Text.Trim());
 
                 var json = await response.Content.ReadAsStringAsync();
-                MessageBox.Show(json);
                 var options = new System.Text.Json.JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -197,8 +196,12 @@ namespace P5_Frontend_Car_App
 
                 Role roleEnum = Role.Customer;
 
-                Welcome_Form welcome = new Welcome_Form(_api, roleEnum);
+                this.Hide();
+
+                Welcome_Form welcome = new Welcome_Form(_api, roleEnum, txtUsername.Text);
                 welcome.ShowDialog();
+
+                this.Close();
 
                 btnSignUp.Enabled = true;
                 btnSignUp.Text = "Sign Up";
@@ -221,8 +224,10 @@ namespace P5_Frontend_Car_App
         }
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            this.Hide();
             var signIn_form = new SignIn_Form(_api);
             signIn_form.ShowDialog();
+            this.Close();
         }
 
 

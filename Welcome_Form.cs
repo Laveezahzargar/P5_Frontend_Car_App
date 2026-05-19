@@ -16,7 +16,8 @@ namespace P5_Frontend_Car_App
     {
         private readonly IApiService api;
         private Role _role;
-        public Welcome_Form(IApiService apiService, Role role)
+        private string Username;
+        public Welcome_Form(IApiService apiService, Role role,string Username)
         {
             InitializeComponent();
             api = apiService;
@@ -28,6 +29,7 @@ namespace P5_Frontend_Car_App
             ApplyTheme();
             ApplyResponsiveLayout();
             _role = role;
+            this.Username= Username;
         }
         private void ApplyTheme()
         {
@@ -36,6 +38,10 @@ namespace P5_Frontend_Car_App
             lblTitle.ForeColor = Color.Black;
             lblTagline.ForeColor = Color.DimGray;
             lblFooter.ForeColor = Color.Gray;
+
+            lblUsername.ForeColor = Color.FromArgb(45, 45, 45);
+            lblUsername.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            lblUsername.AutoSize = true;
 
             lblTitle.Font = new Font("Segoe UI", 24, FontStyle.Bold);
             lblTagline.Font = new Font("Segoe UI", 12, FontStyle.Italic);
@@ -64,7 +70,7 @@ namespace P5_Frontend_Car_App
 
             layout.Dock = DockStyle.Fill;
             layout.ColumnCount = 1;
-            layout.RowCount = 7;
+            layout.RowCount = 8;
 
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 15));
             layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -72,10 +78,15 @@ namespace P5_Frontend_Car_App
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 45));
             layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 15));
 
             lblTitle.Anchor = AnchorStyles.None;
             lblTagline.Anchor = AnchorStyles.None;
+
+            lblUsername.Anchor = AnchorStyles.None;
+            lblUsername.TextAlign = ContentAlignment.MiddleCenter;
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
             pictureBoxBanner.Anchor = AnchorStyles.None;
 
@@ -88,7 +99,9 @@ namespace P5_Frontend_Car_App
             btnHomepage.Margin = new Padding(0, 15, 0, 10);
             btnExploreCars.Margin = new Padding(0, 15, 0, 10);
             btnExit.Margin = new Padding(0, 10, 0, 20);
+            lblUsername.Margin = new Padding(0, 10, 0, 5);
 
+            layout.Controls.Add(lblUsername, 0, 0);
             layout.Controls.Add(lblTitle, 0, 1);
             layout.Controls.Add(lblTagline, 0, 2);
             layout.Controls.Add(pictureBoxBanner, 0, 3);
@@ -101,6 +114,7 @@ namespace P5_Frontend_Car_App
         }
         private void WelcomeForm_Load(object sender, EventArgs e)
         {
+            lblUsername.Text = $"Welcome, {Username} 👋";
             if (_role == Role.Customer)
             {
                 btnHomepage.Visible = false; // hide button
@@ -112,27 +126,21 @@ namespace P5_Frontend_Car_App
         }
         private void btnHomepage_Click(object sender, EventArgs e)
         {
+            this.Hide();
             var main_form = new Main_Form(api);
             main_form.ShowDialog();
+            this.Show();
         }
         private void btnExploreCars_Click(object sender, EventArgs e)
         {
+            this.Hide();
             var explore_form = new Explore_Form(api);
             explore_form.ShowDialog();
+            this.Show();
         }
         private void btnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
-        private void btnSignUp_Click(object sender, EventArgs e)
-        {
-            var signUp_form = new SignUp_Form(api);
-            signUp_form.ShowDialog();
-        }
-        private void btnSignIn_Click(object sender, EventArgs e)
-        {
-            var signIn_form = new SignIn_Form(api);
-            signIn_form.ShowDialog();
         }
         private void label1_Click(object sender, EventArgs e)
         {

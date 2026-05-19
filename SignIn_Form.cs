@@ -199,8 +199,12 @@ namespace P5_Frontend_Car_App
 
                     Role roleEnum = loginData?.Role ?? Role.Customer;
 
-                    Welcome_Form welcome = new Welcome_Form(_api,roleEnum);
+                    this.Hide();
+
+                    Welcome_Form welcome = new Welcome_Form(_api,roleEnum,txtUsername.Text);
                     welcome.ShowDialog();
+
+                    this.Close();
 
                     txtUsername.Clear();
                     txtPassword.Clear();
@@ -231,8 +235,10 @@ namespace P5_Frontend_Car_App
 
         private void btnRegister_Click(object sender, EventArgs e)
         {
+            this.Hide();
             var SignUp_form = new SignUp_Form(_api);
             SignUp_form.ShowDialog();
+            this.Close();
         }
 
         private void label1_Click(object sender, EventArgs e)

@@ -35,9 +35,8 @@
             btnExit = new Button();
             pictureBoxBanner = new PictureBox();
             lblFooter = new Label();
-            btnSignIn = new Button();
-            btnSignUp = new Button();
             btnExploreCars = new Button();
+            lblUsername = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBoxBanner).BeginInit();
             SuspendLayout();
             // 
@@ -76,7 +75,7 @@
             btnExit.Name = "btnExit";
             btnExit.Size = new Size(94, 49);
             btnExit.TabIndex = 3;
-            btnExit.Text = "Exit";
+            btnExit.Text = "Logout";
             btnExit.UseVisualStyleBackColor = true;
             btnExit.Click += btnExit_Click;
             // 
@@ -99,26 +98,6 @@
             lblFooter.TabIndex = 5;
             lblFooter.Text = "© 2026 Car Showroom Management System";
             // 
-            // btnSignIn
-            // 
-            btnSignIn.Location = new Point(314, 37);
-            btnSignIn.Name = "btnSignIn";
-            btnSignIn.Size = new Size(90, 35);
-            btnSignIn.TabIndex = 6;
-            btnSignIn.Text = "Sign In";
-            btnSignIn.UseVisualStyleBackColor = true;
-            btnSignIn.Click += btnSignIn_Click;
-            // 
-            // btnSignUp
-            // 
-            btnSignUp.Location = new Point(414, 37);
-            btnSignUp.Name = "btnSignUp";
-            btnSignUp.Size = new Size(90, 35);
-            btnSignUp.TabIndex = 7;
-            btnSignUp.Text = "Sign Up";
-            btnSignUp.UseVisualStyleBackColor = true;
-            btnSignUp.Click += btnSignUp_Click;
-            // 
             // btnExploreCars
             // 
             btnExploreCars.Location = new Point(715, 536);
@@ -129,14 +108,22 @@
             btnExploreCars.UseVisualStyleBackColor = true;
             btnExploreCars.Click += btnExploreCars_Click;
             // 
+            // lblUsername
+            // 
+            lblUsername.AutoSize = true;
+            lblUsername.Location = new Point(262, 60);
+            lblUsername.Name = "lblUsername";
+            lblUsername.Size = new Size(50, 20);
+            lblUsername.TabIndex = 10;
+            lblUsername.Text = "label2";
+            // 
             // Welcome_Form
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1468, 741);
+            Controls.Add(lblUsername);
             Controls.Add(btnExploreCars);
-            Controls.Add(btnSignUp);
-            Controls.Add(btnSignIn);
             Controls.Add(lblFooter);
             Controls.Add(pictureBoxBanner);
             Controls.Add(btnExit);
@@ -159,8 +146,7 @@
         private Button btnExit;
         private PictureBox pictureBoxBanner;
         private Label lblFooter;
-        private Button btnSignIn;
-        private Button btnSignUp;
         private Button btnExploreCars;
+        private Label lblUsername;
     }
 }

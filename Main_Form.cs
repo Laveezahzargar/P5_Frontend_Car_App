@@ -87,28 +87,38 @@ namespace P5_Frontend_Car_App
         }
         private void btnCars_Click(object sender, EventArgs e)
         {
+            this.Hide();
             Car_Form f = new Car_Form(api);
             f.ShowDialog();
+            this.Show();
         }
         private void btnManf_Click(object sender, EventArgs e)
         {
+            this.Hide();
             Manufacturer_Form f = new Manufacturer_Form(api);
             f.ShowDialog();
+            this.Show();
         }
         private void btnEngine_Click(object sender, EventArgs e)
         {
+            this.Hide();
             EngineCapacity_Form f = new EngineCapacity_Form(api);
             f.ShowDialog();
+            this.Show();
         }
         private void btnDashboard_Click(object sender, EventArgs e)
         {
+            this.Hide();
             Dashboard f = new Dashboard(api);
             f.ShowDialog();
+            this.Show();
         }
         private void btnUser_Click(object sender, EventArgs e)
         {
+            this.Hide();
             User_Form f = new User_Form(api);
             f.ShowDialog();
+            this.Show();
         }
     }
     
