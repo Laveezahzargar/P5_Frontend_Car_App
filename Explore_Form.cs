@@ -172,7 +172,7 @@ namespace P5_Frontend_Car_App
             btn.Click += (s, e) =>
             {
                 CarDetails_Form details =
-                    new CarDetails_Form(car);
+                    new CarDetails_Form(car,_api);
 
                 details.ShowDialog();
             };

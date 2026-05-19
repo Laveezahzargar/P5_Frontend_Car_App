@@ -1,20 +1,24 @@
-﻿using P5_Frontend_Car_App.Models;
+﻿using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Models;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using P5_Frontend_Car_App.DTOs;
 
 namespace P5_Frontend_Car_App
 {
     public partial class CarDetails_Form : Form
     {
         private readonly CarDto _car;
+        private readonly IApiService _api;
         PictureBox pic;
 
         Label lblName;
@@ -26,10 +30,11 @@ namespace P5_Frontend_Car_App
         Label lblPrice;
 
         Button btnBuy;
-        public CarDetails_Form(CarDto car)
+        public CarDetails_Form(CarDto car,IApiService apiService)
         {
             InitializeComponent();
             _car = car;
+            _api = apiService;
             this.Width = 600;
             this.Height = 850;
             this.MinimumSize = new Size(500, 700);
@@ -162,6 +167,8 @@ namespace P5_Frontend_Car_App
 
             btnBuy.FlatStyle = FlatStyle.Flat;
 
+            btnBuy.Click += BtnBuy_Click;
+
             this.Controls.Add(pic);
 
             this.Controls.Add(lblName);
@@ -256,5 +263,32 @@ namespace P5_Frontend_Car_App
 
             this.AutoScroll = true;
         }
+        private async void BtnBuy_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show(
+                $"Buy {_car.Name} for ${_car.Price:N0}?",
+                "Confirm Purchase",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
+            {
+                await _api.PostAsync($"api/Order/CreateOrder/{_car.Id}", null);
+
+                MessageBox.Show("Purchase successful 🚗");
+                Log.Information("Car purchased successfully");
+
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Purchase failed");
+                Log.Error(ex, "Purchasing car failed");
+            }
+        }
+
     }
 }
