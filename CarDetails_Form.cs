@@ -276,7 +276,7 @@ namespace P5_Frontend_Car_App
 
             try
             {
-                await _api.PostAsync($"Order/CreateOrder/{_car.Id}", null);
+               // await _api.PostAsync($"Order/CreateOrder/{_car.Id}", null);
 
                 MessageBox.Show("Purchase successful 🚗");
                 Log.Information("Car purchased successfully");

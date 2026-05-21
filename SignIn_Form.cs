@@ -1,19 +1,7 @@
-﻿using P5_Frontend_Car_App.DTOs;
+﻿using P5_Frontend_Car_App.DTOs.User;
 using P5_Frontend_Car_App.Interfaces;
-using P5_Frontend_Car_App.Types;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 
 namespace P5_Frontend_Car_App
@@ -106,119 +94,42 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                // validation
                 if (string.IsNullOrWhiteSpace(txtUsername.Text) ||
                     string.IsNullOrWhiteSpace(txtPassword.Text))
                 {
-                    MessageBox.Show(
-                        "Please fill all fields",
-                        "Validation",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-
+                    MessageBox.Show("Please fill all fields");
                     return;
                 }
 
                 btnLogin.Enabled = false;
                 btnLogin.Text = "Please wait...";
 
+                var result = await _api.PostAsync<LoginResponseDto>(
+                    "user/login",
+                    new LoginRequestDto
+                    {
+                        Username = txtUsername.Text.Trim(),
+                        Password = txtPassword.Text
+                    });
+
+                if (result == null)
                 {
-                    var form = new MultipartFormDataContent
-                    {
-                        {
-                            new StringContent(txtUsername.Text.Trim()),
-                            "Username"
-                        },
-
-                        {
-                            new StringContent(txtPassword.Text),
-                            "Password"
-                        }
-                    };
-                    var cookies = new CookieContainer();
-
-                    var handler = new HttpClientHandler
-                    {
-                        CookieContainer = cookies,
-                        UseCookies = true
-                    };
-
-                    using var client = new HttpClient(handler);
-                    var response = await client.PostAsync(
-                        "http://localhost:5294/api/user/login",
-                        form);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var error =
-                            await response.Content.ReadAsStringAsync();
-
-                        MessageBox.Show(
-                            $"Login failed: {error}",
-                            "Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-
-                        txtPassword.Clear();
-
-                        return;
-                    }
-                    // VIEW COOKIES
-                    var uri =
-                        new Uri("http://localhost:5294");
-
-                    var cookieCollection =
-                        cookies.GetCookies(uri);
-
-                    foreach (Cookie cookie in cookieCollection)
-                    {
-                        Log.Information(
-                            "Cookie -> {Name} = {Value}",
-                            cookie.Name,
-                            cookie.Value);
-                    }
-                    MessageBox.Show(
-                        "Login successful!",
-                        "Success",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-
-                    Log.Information(
-                        "User {Username} logged in successfully",
-                        txtUsername.Text.Trim());
-
-                    var json = await response.Content.ReadAsStringAsync();
-
-                    var options = new System.Text.Json.JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    };
-                    MessageBox.Show(json);
-                    var responseObj = JsonSerializer.Deserialize<ApiResponse<LoginResponseDto>>(json, options);
-                    var loginData = responseObj?.Data;
-
-                    Role roleEnum = loginData?.Role ?? Role.Customer;
-
-                    this.Hide();
-
-                    Welcome_Form welcome = new Welcome_Form(_api,roleEnum,txtUsername.Text);
-                    welcome.ShowDialog();
-
-                    this.Close();
-
-                    txtUsername.Clear();
-                    txtPassword.Clear();
+                    MessageBox.Show("Invalid login response");
+                    return;
                 }
+
+                MessageBox.Show("Login successful!");
+
+                Log.Information("User {Username} logged in", result.Username);
+
+                this.Hide();
+                new Welcome_Form(_api, result.Role, result.Username).ShowDialog();
+                this.Close();
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Login failed");
-
-                MessageBox.Show(
-                    "Something went wrong",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message);
             }
             finally
             {
@@ -239,11 +150,6 @@ namespace P5_Frontend_Car_App
             var SignUp_form = new SignUp_Form(_api);
             SignUp_form.ShowDialog();
             this.Close();
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

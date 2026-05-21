@@ -1,19 +1,6 @@
-﻿using P5_Frontend_Car_App.DTOs;
-using P5_Frontend_Car_App.Interfaces;
-using P5_Frontend_Car_App.Types;
+﻿using P5_Frontend_Car_App.Interfaces;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using P5_Frontend_Car_App.DTOs.User;
 
 namespace P5_Frontend_Car_App
 {
@@ -100,119 +87,100 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                // validation
-                if (string.IsNullOrWhiteSpace(txtFullName.Text) ||
-                    string.IsNullOrWhiteSpace(txtEmail.Text) ||
-                    string.IsNullOrWhiteSpace(txtUsername.Text) ||
-                    string.IsNullOrWhiteSpace(txtPassword.Text) ||
-                    string.IsNullOrWhiteSpace(txtConfirmPassword.Text))
-                {
-                    MessageBox.Show("Fill all fields");
-                    return;
-                }
-
-                // email validation
-                if (!txtEmail.Text.Contains("@"))
-                {
-                    MessageBox.Show("Invalid email");
-                    return;
-                }
-
-                // password length
-                if (txtPassword.Text.Length < 6)
-                {
-                    MessageBox.Show("Password must be at least 6 characters");
-                    return;
-                }
-
-                // password match
-                if (txtPassword.Text != txtConfirmPassword.Text)
-                {
-                    MessageBox.Show("Passwords do not match");
-                    return;
-                }
+                if (!ValidateInputs()) return;
 
                 btnSignUp.Enabled = false;
                 btnSignUp.Text = "Please wait...";
 
-                var cookies = new CookieContainer();
-
-                var handler = new HttpClientHandler
+                var result = await _api.PostAsync<UserDto>("user",
+                    new RegisterRequestDto
                 {
-                    CookieContainer = cookies,
-                    UseCookies = true
-                };
+                    FullName = txtFullName.Text.Trim(),
+                    Email = txtEmail.Text.Trim(),
+                    Username = txtUsername.Text.Trim(),
+                    Password = txtPassword.Text
+                });
 
-                using var client = new HttpClient(handler);
-
-                var form = new MultipartFormDataContent
-        {
-            { new StringContent(txtFullName.Text.Trim()), "FullName" },
-            { new StringContent(txtEmail.Text.Trim()), "Email" },
-            { new StringContent(txtUsername.Text.Trim()), "Username" },
-            { new StringContent(txtPassword.Text), "Password" }
-        };
-
-                var response = await client.PostAsync(
-                    "http://localhost:5294/api/user",
-                    form);
-
-                if (!response.IsSuccessStatusCode)
+                if (result == null)
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-
-                    MessageBox.Show($"Registration failed: {error}");
-
-                    ClearForm();
-
-                    btnSignUp.Enabled = true;
-                    btnSignUp.Text = "Sign Up";
-
+                    MessageBox.Show("Unexpected server response");
                     return;
                 }
 
-                var uri =
-                       new Uri("http://localhost:5294");
-
-                var cookieCollection =
-                    cookies.GetCookies(uri);
-
-                foreach (Cookie cookie in cookieCollection)
-                {
-                    Log.Information(
-                        "Cookie -> {Name} = {Value}",
-                        cookie.Name,
-                        cookie.Value);
-                }
-
                 MessageBox.Show("Account created successfully");
-                Log.Information("User {Username} registered successfully", txtUsername.Text.Trim());
 
-                var json = await response.Content.ReadAsStringAsync();
-                var options = new System.Text.Json.JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-                Role roleEnum = Role.Customer;
-
-                this.Hide();
-
-                Welcome_Form welcome = new Welcome_Form(_api, roleEnum, txtUsername.Text);
-                welcome.ShowDialog();
-
-                this.Close();
-
-                btnSignUp.Enabled = true;
-                btnSignUp.Text = "Sign Up";
+                Log.Information("User {Username} registered", result.Username);
 
                 ClearForm();
+
+                this.Hide();
+                new Welcome_Form(_api, result.Role, result.Username).ShowDialog();
+                this.Close();
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Signup failed");
-                MessageBox.Show("Signup failed");
+                MessageBox.Show(ex.Message);
             }
+            finally
+            {
+                btnSignUp.Enabled = true;
+                btnSignUp.Text = "Sign Up";
+            }
+        }
+        private bool ValidateInputs()
+        {
+            if (string.IsNullOrWhiteSpace(txtFullName.Text) ||
+                string.IsNullOrWhiteSpace(txtEmail.Text) ||
+                string.IsNullOrWhiteSpace(txtUsername.Text) ||
+                string.IsNullOrWhiteSpace(txtPassword.Text) ||
+                string.IsNullOrWhiteSpace(txtConfirmPassword.Text))
+            {
+                MessageBox.Show("Please fill all fields");
+                return false;
+            }
+
+            // Email validation (better than Contains("@"))
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(txtEmail.Text.Trim());
+            }
+            catch
+            {
+                MessageBox.Show("Invalid email format");
+                return false;
+            }
+
+            // Username rules
+            if (txtUsername.Text.Length < 3)
+            {
+                MessageBox.Show("Username must be at least 3 characters");
+                return false;
+            }
+
+            // Password rules
+            if (txtPassword.Text.Length < 8)
+            {
+                MessageBox.Show("Password must be at least 8 characters");
+                return false;
+            }
+
+            // Optional stronger password check
+            if (!txtPassword.Text.Any(char.IsUpper) ||
+                !txtPassword.Text.Any(char.IsLower) ||
+                !txtPassword.Text.Any(char.IsDigit))
+            {
+                MessageBox.Show("Password must contain uppercase, lowercase, and a number");
+                return false;
+            }
+            // Confirm password
+            if (txtPassword.Text != txtConfirmPassword.Text)
+            {
+                MessageBox.Show("Passwords do not match");
+                return false;
+            }
+
+            return true;
         }
         void ClearForm()
         {
@@ -228,12 +196,6 @@ namespace P5_Frontend_Car_App
             var signIn_form = new SignIn_Form(_api);
             signIn_form.ShowDialog();
             this.Close();
-        }
-
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -13,6 +13,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using P5_Frontend_Car_App.DTOs;
 using P5_Frontend_Car_App.Services;
 using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.DTOs.User;
 
 namespace P5_Frontend_Car_App
 {

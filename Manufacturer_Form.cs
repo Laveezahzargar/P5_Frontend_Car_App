@@ -238,7 +238,7 @@ namespace P5_Frontend_Car_App
                 if (selectedManufacturerId == 0)
                 {
                     // CREATE
-                    await api.PostAsync("Manufacturer", data);
+                   // await api.PostAsync("Manufacturer", data);
                     Log.Information("User added new manufacturer: {ManufacturerName}", txtName.Text);
                 }
                 else

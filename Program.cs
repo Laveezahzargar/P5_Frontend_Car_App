@@ -1,8 +1,9 @@
-using Serilog;
-using Serilog.Events;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using P5_Frontend_Car_App.Interfaces;
 using P5_Frontend_Car_App.Services;
+using Serilog;
+using Serilog.Events;
 
 namespace P5_Frontend_Car_App
 {
@@ -11,27 +12,29 @@ namespace P5_Frontend_Car_App
         [STAThread]
         static void Main()
         {
+            var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+            Directory.CreateDirectory(logPath);
+
             Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Debug()
-               .Enrich.WithThreadId()
-               .WriteTo.Console()
-
-               .WriteTo.File("logs/info-.txt",
-                   rollingInterval: RollingInterval.Day,
-                   restrictedToMinimumLevel: LogEventLevel.Information,
+                .MinimumLevel.Debug()
+                .Enrich.FromLogContext()
+                .Enrich.WithThreadId()
+                .WriteTo.Console()
+                .WriteTo.File(
+                    Path.Combine(logPath, "info-.txt"),
+                    rollingInterval: RollingInterval.Day,
+                    restrictedToMinimumLevel: LogEventLevel.Information,
                     outputTemplate:
-                "{Timestamp:HH:mm:ss} | {Level:u3} | [Thread:{ThreadId}] | {SourceContext} | {Message:lj}{NewLine}{Exception}{NewLine}------------------------{NewLine}"
-                   )
-
-               .WriteTo.File(
-                "logs/error-.txt",
-                rollingInterval: RollingInterval.Day,
-                restrictedToMinimumLevel: LogEventLevel.Error,
-                outputTemplate:
-                "{Timestamp:HH:mm:ss} | {Level:u3} | [Thread:{ThreadId}] | {SourceContext} | {Message:lj}{NewLine}{Exception}{NewLine}------------------------{NewLine}"
-               )
-
-               .CreateLogger();
+                    "{Timestamp:HH:mm:ss} | {Level:u3} | [Thread:{ThreadId}] | {SourceContext} | {Message:lj}{NewLine}{Exception}{NewLine}------------------------{NewLine}"
+                )
+                .WriteTo.File(
+                    Path.Combine(logPath, "error-.txt"),
+                    rollingInterval: RollingInterval.Day,
+                    restrictedToMinimumLevel: LogEventLevel.Error,
+                    outputTemplate:
+                    "{Timestamp:HH:mm:ss} | {Level:u3} | [Thread:{ThreadId}] | {SourceContext} | {Message:lj}{NewLine}{Exception}{NewLine}------------------------{NewLine}"
+                )
+                .CreateLogger();
 
             try
             {
@@ -49,6 +52,13 @@ namespace P5_Frontend_Car_App
                 ApplicationConfiguration.Initialize();
 
                 var services = new ServiceCollection();
+
+                var config = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+                services.AddSingleton<IConfiguration>(config);
 
                 services.AddHttpClient<IApiService, ApiService>();
 

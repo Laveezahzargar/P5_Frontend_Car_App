@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Serilog;
-using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.DTOs.User;
 
 namespace P5_Frontend_Car_App
 {
@@ -99,39 +99,6 @@ namespace P5_Frontend_Car_App
                 AnchorStyles.Top |
                 AnchorStyles.Right;
         }
-
-        async Task LoadUsers()
-        {
-            try
-            {
-                var users =
-                    await api.GetAsync<List<UserDto>>(
-                        "User");
-
-                dataGridViewUser.DataSource =
-                    users.Select(x => new
-                    {
-                        x.Id,
-                        x.FullName,
-                        x.Email,
-                        x.Username,
-                        x.Role,
-                        x.CreatedAt
-                    }).ToList();
-
-                AddButtonsToGrid();
-
-                StyleGridButtons();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Failed to load users");
-
-                MessageBox.Show(
-                    "Failed to load users");
-            }
-        }
-
         void AddButtonsToGrid()
         {
             if (dataGridViewUser.Columns["Edit"] != null)
@@ -181,120 +148,6 @@ namespace P5_Frontend_Car_App
             }
         }
 
-        private async void btnAdd_Click(
-            object sender,
-            EventArgs e)
-        {
-            try
-            {
-                if (
-                    string.IsNullOrWhiteSpace(
-                        txtFullName.Text) ||
-
-                    string.IsNullOrWhiteSpace(
-                        txtEmail.Text) ||
-
-                    string.IsNullOrWhiteSpace(
-                        txtUsername.Text) )
-                {
-                    MessageBox.Show(
-                        "Fill all fields");
-
-                    return;
-                }
-                if (selectedUserId == 0 &&
-                 string.IsNullOrWhiteSpace(txtPassword.Text))
-                {
-                    MessageBox.Show("Password is required");
-                    return;
-                }
-
-                var form =
-                    new MultipartFormDataContent
-                    {
-                        {
-                            new StringContent(
-                                txtFullName.Text.Trim()),
-                            "FullName"
-                        },
-
-                        {
-                            new StringContent(
-                                txtEmail.Text.Trim()),
-                            "Email"
-                        },
-
-                        {
-                            new StringContent(
-                                txtUsername.Text.Trim()),
-                            "Username"
-                        },
-
-                        { new StringContent("customer"), "Role" }
-                    };
-
-                using var client = new HttpClient();
-
-                if (!string.IsNullOrWhiteSpace(txtPassword.Text))
-                {
-                    form.Add(new StringContent(txtPassword.Text), "Password");
-                }
-
-                HttpResponseMessage response;
-
-                if (selectedUserId == 0)
-                {
-                    response =
-                        await client.PostAsync(
-                            "http://localhost:5294/api/user",
-                            form);
-
-                    Log.Information(
-                        "User added: {Username}",
-                        txtUsername.Text);
-                }
-                else
-                {
-                    response =
-                        await client.PutAsync(
-                            $"http://localhost:5294/api/user/{selectedUserId}",
-                            form);
-
-                    Log.Information(
-                        "User updated: {Id}",
-                        selectedUserId);
-                }
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error =
-                        await response.Content
-                        .ReadAsStringAsync();
-
-                    MessageBox.Show(
-                        $"Failed: {error}");
-
-                    return;
-                }
-
-                MessageBox.Show(
-                    "Operation successful");
-
-                ClearForm();
-
-                await LoadUsers();
-            }
-            catch (Exception ex)
-            {
-                Log.Error(
-                    ex,
-                    "Failed to save user");
-
-                MessageBox.Show(
-                    "Operation failed");
-            }
-        }
-
         private async void dataGridViewUser_CellContentClick(
             object sender,
             DataGridViewCellEventArgs e)
@@ -319,7 +172,10 @@ namespace P5_Frontend_Car_App
             }
             else if (col == "Delete")
             {
-                await DeleteUser(id);
+                var btnCell = (DataGridViewButtonCell)
+        dataGridViewUser.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                await DeleteUser(id, btnCell);
             }
         }
 
@@ -347,40 +203,141 @@ namespace P5_Frontend_Car_App
             btnAdd.Text = "Update";
         }
 
-        async Task DeleteUser(int id)
+       
+        async Task LoadUsers()
         {
             try
             {
-                var result =
-                    MessageBox.Show(
-                        "Delete this user?",
-                        "Confirm",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning);
+                var users = await api.GetAsync<List<UserDto>>("user");
 
-                if (result != DialogResult.Yes)
+                if (users == null || users.Count == 0)
+                {
+                    dataGridViewUser.DataSource = null;
                     return;
+                }
 
-                await api.DeleteAsync(
-                    $"User/{id}");
+                dataGridViewUser.DataSource = users;
 
-                Log.Warning(
-                    "User deleted: {Id}",
-                    id);
+                AddButtonsToGrid();
+                StyleGridButtons();
+
+                // Optional: hide columns you don’t want
+                // dataGridViewUser.Columns["Password"]?.Visible = false;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to load users");
+                MessageBox.Show(ex.Message);
+            }
+        }
+        async Task DeleteUser(int id, DataGridViewButtonCell btnCell)
+        {
+            // Prevent double click
+            if (btnCell.ReadOnly)
+                return;
+
+            var confirm = MessageBox.Show(
+                "Delete this user?",
+                "Confirm",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (confirm != DialogResult.Yes)
+                return;
+
+            bool gridRefreshed = false;
+
+            try
+            {
+                // "Disable" button
+                btnCell.ReadOnly = true;
+                btnCell.Value = "Deleting...";
+                btnCell.Style.ForeColor = Color.Gray;
+
+                dataGridViewUser.Refresh();
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                await api.DeleteAsync($"User/{id}");
+
+                Log.Information("User deleted: {Id}", id);
+
+                await LoadUsers();
+
+                gridRefreshed = true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Delete failed for user {Id}", id);
 
                 MessageBox.Show(
-                    "User deleted");
+                    $"Delete failed:\n{ex.Message}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
 
+                // Restore ONLY if grid wasn't refreshed
+                if (!gridRefreshed)
+                {
+                    btnCell.ReadOnly = false;
+                    btnCell.Value = "Delete";
+                    btnCell.Style.ForeColor = Color.White;
+                }
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+        private async void btnAdd_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtFullName.Text) ||
+                    string.IsNullOrWhiteSpace(txtEmail.Text) ||
+                    string.IsNullOrWhiteSpace(txtUsername.Text))
+                {
+                    MessageBox.Show("Fill all fields");
+                    return;
+                }
+
+                if (selectedUserId == 0 &&
+                    string.IsNullOrWhiteSpace(txtPassword.Text))
+                {
+                    MessageBox.Show("Password is required");
+                    return;
+                }
+
+                var dto = new CreateUserRequestDto
+                {
+                    FullName = txtFullName.Text.Trim(),
+                    Email = txtEmail.Text.Trim(),
+                    Username = txtUsername.Text.Trim(),
+                    Password = txtPassword.Text
+                };
+
+                if (selectedUserId == 0)
+                {
+                    await api.PostAsync<UserDto>("user", dto);
+
+                    Log.Information("User added: {Username}", dto.Username);
+                }
+                else
+                {
+                    await api.PutAsync($"user/{selectedUserId}", dto);
+
+                    Log.Information("User updated: {Id}", selectedUserId);
+                }
+
+                MessageBox.Show("Operation successful");
+
+                ClearForm();
                 await LoadUsers();
             }
             catch (Exception ex)
             {
-                Log.Error(
-                    ex,
-                    "Delete failed");
-
-                MessageBox.Show(
-                    "Delete failed");
+                Log.Error(ex, "Failed to save user");
+                MessageBox.Show(ex.Message);
             }
         }
 

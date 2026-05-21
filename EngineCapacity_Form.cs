@@ -239,7 +239,7 @@ namespace P5_Frontend_Car_App
 
                 if (selectedEngineId == 0)
                 {
-                    await api.PostAsync("EngineCapacity", data);
+                   // await api.PostAsync("EngineCapacity", data);
                     Log.Information("User added new engine capacity: {EngineCapacityName}", txtName.Text);
                 }
                 else

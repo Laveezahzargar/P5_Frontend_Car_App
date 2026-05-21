@@ -99,7 +99,6 @@
             lblPassword.Size = new Size(70, 20);
             lblPassword.TabIndex = 5;
             lblPassword.Text = "Password";
-            lblPassword.Click += label4_Click;
             // 
             // lblConfirmPassword
             // 

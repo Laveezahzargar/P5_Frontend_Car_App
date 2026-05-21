@@ -42,15 +42,6 @@
             label6 = new Label();
             SuspendLayout();
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(657, 66);
-            label1.Name = "label1";
-            label1.Size = new Size(108, 20);
-            label1.TabIndex = 0;
-            label1.Text = "SIGN IN PANEL";
-            label1.Click += label1_Click;
             // 
             // label2
             // 
