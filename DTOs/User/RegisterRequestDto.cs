@@ -16,5 +16,7 @@ namespace P5_Frontend_Car_App.DTOs.User
         public string Username { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
+
+        public string Code { get; set; } = string.Empty;
     }
 }

@@ -44,6 +44,8 @@
             btnSignUp = new Button();
             lblInfo = new Label();
             linkLogin = new LinkLabel();
+            lblOtp = new Label();
+            txtOtp = new TextBox();
             SuspendLayout();
             // 
             // lblTitle
@@ -157,7 +159,7 @@
             // 
             // btnSignUp
             // 
-            btnSignUp.Location = new Point(748, 330);
+            btnSignUp.Location = new Point(748, 373);
             btnSignUp.Name = "btnSignUp";
             btnSignUp.Size = new Size(94, 29);
             btnSignUp.TabIndex = 13;
@@ -168,7 +170,7 @@
             // lblInfo
             // 
             lblInfo.AutoSize = true;
-            lblInfo.Location = new Point(601, 390);
+            lblInfo.Location = new Point(601, 428);
             lblInfo.Name = "lblInfo";
             lblInfo.Size = new Size(182, 20);
             lblInfo.TabIndex = 15;
@@ -179,7 +181,7 @@
             linkLogin.AutoSize = true;
             linkLogin.LinkBehavior = LinkBehavior.NeverUnderline;
             linkLogin.LinkColor = Color.DimGray;
-            linkLogin.Location = new Point(661, 420);
+            linkLogin.Location = new Point(658, 460);
             linkLogin.Name = "linkLogin";
             linkLogin.Size = new Size(46, 20);
             linkLogin.TabIndex = 16;
@@ -187,11 +189,29 @@
             linkLogin.Text = "Login";
             linkLogin.Click += btnLogin_Click;
             // 
+            // lblOtp
+            // 
+            lblOtp.AutoSize = true;
+            lblOtp.Location = new Point(513, 325);
+            lblOtp.Name = "lblOtp";
+            lblOtp.Size = new Size(35, 20);
+            lblOtp.TabIndex = 17;
+            lblOtp.Text = "OTP";
+            // 
+            // txtOtp
+            // 
+            txtOtp.Location = new Point(670, 322);
+            txtOtp.Name = "txtOtp";
+            txtOtp.Size = new Size(201, 27);
+            txtOtp.TabIndex = 18;
+            // 
             // SignUp_Form
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1432, 733);
+            Controls.Add(txtOtp);
+            Controls.Add(lblOtp);
             Controls.Add(linkLogin);
             Controls.Add(lblInfo);
             Controls.Add(btnSignUp);
@@ -233,5 +253,7 @@
         private Button btnSignUp;
         private Label lblInfo;
         private LinkLabel linkLogin;
+        private Label lblOtp;
+        private TextBox txtOtp;
     }
 }

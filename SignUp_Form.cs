@@ -7,6 +7,7 @@ namespace P5_Frontend_Car_App
     public partial class SignUp_Form : Form
     {
         private readonly IApiService _api;
+        private bool _otpSent = false;
         public SignUp_Form(IApiService apiService)
         {
             InitializeComponent();
@@ -25,6 +26,10 @@ namespace P5_Frontend_Car_App
             StyleTextBox(txtUsername);
             StyleTextBox(txtPassword);
             StyleTextBox(txtConfirmPassword);
+            StyleTextBox(txtOtp);
+
+            txtOtp.Visible = false;
+            lblOtp.Visible = false;
 
             txtPassword.PasswordChar = '*';
             txtConfirmPassword.PasswordChar = '*';
@@ -51,6 +56,9 @@ namespace P5_Frontend_Car_App
                 AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             txtConfirmPassword.Anchor =
+                AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            txtOtp.Anchor =
                 AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
             btnSignUp.Anchor =
@@ -83,39 +91,128 @@ namespace P5_Frontend_Car_App
 
             txt.Height = 30;
         }
+        //private async void btnSignUp_Click(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (!ValidateInputs()) return;
+
+        //        btnSignUp.Enabled = false;
+        //        btnSignUp.Text = "Please wait...";
+
+        //        var result = await _api.PostAsync<UserDto>("user",
+        //            new RegisterRequestDto
+        //        {
+        //            FullName = txtFullName.Text.Trim(),
+        //            Email = txtEmail.Text.Trim(),
+        //            Username = txtUsername.Text.Trim(),
+        //            Password = txtPassword.Text
+        //        });
+
+        //        if (result == null)
+        //        {
+        //            MessageBox.Show("Unexpected server response");
+        //            return;
+        //        }
+
+        //        MessageBox.Show("Account created successfully");
+
+        //        Log.Information("User {Username} registered", result.Username);
+
+        //        ClearForm();
+
+        //        this.Hide();
+        //        new Welcome_Form(_api, result.Role, result.Username).ShowDialog();
+        //        this.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex, "Signup failed");
+        //        MessageBox.Show(ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        btnSignUp.Enabled = true;
+        //        btnSignUp.Text = "Sign Up";
+        //    }
+        //}
         private async void btnSignUp_Click(object sender, EventArgs e)
         {
             try
             {
-                if (!ValidateInputs()) return;
-
-                btnSignUp.Enabled = false;
-                btnSignUp.Text = "Please wait...";
-
-                var result = await _api.PostAsync<UserDto>("user",
-                    new RegisterRequestDto
+                if (!_otpSent)
                 {
-                    FullName = txtFullName.Text.Trim(),
-                    Email = txtEmail.Text.Trim(),
-                    Username = txtUsername.Text.Trim(),
-                    Password = txtPassword.Text
-                });
+                    // STEP 1: Send OTP
+                    if (!ValidateInputs()) return;
 
-                if (result == null)
-                {
-                    MessageBox.Show("Unexpected server response");
-                    return;
+                    btnSignUp.Enabled = false;
+                    btnSignUp.Text = "Sending code...";
+
+                    var result = await _api.PostAsync<bool>(
+                        "User/SendVerificationCode",
+                        new { Email = txtEmail.Text.Trim() }
+                    );
+
+                    if (!result)
+                    {
+                        MessageBox.Show("Failed to send code.");
+                        return;
+                    }
+
+                    MessageBox.Show("Verification code sent to your email.");
+
+                    // Switch UI to OTP mode
+                    _otpSent = true;
+
+                    txtOtp.Visible = true;
+                    lblOtp.Visible = true;
+
+                    txtFullName.Enabled = false;
+                    txtEmail.Enabled = false;
+                    txtUsername.Enabled = false;
+                    txtPassword.Enabled = false;
+                    txtConfirmPassword.Enabled = false;
+
+                    btnSignUp.Text = "Verify Code";
                 }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(txtOtp.Text))
+                    {
+                        MessageBox.Show("Enter verification code");
+                        return;
+                    }
+                    // STEP 2: VERIFY + CREATE ACCOUNT
+                    btnSignUp.Enabled = false;
+                    btnSignUp.Text = "Verifying...";
 
-                MessageBox.Show("Account created successfully");
+                    var result = await _api.PostAsync<UserDto>(
+                        "User/VerifyAndCreate",
+                        new RegisterRequestDto
+                        {
+                            FullName = txtFullName.Text.Trim(),
+                            Email = txtEmail.Text.Trim(),
+                            Username = txtUsername.Text.Trim(),
+                            Password = txtPassword.Text,
+                            Code = txtOtp.Text.Trim()
+                        });
 
-                Log.Information("User {Username} registered", result.Username);
+                    if (result == null)
+                    {
+                        MessageBox.Show("Invalid or expired code.");
+                        return;
+                    }
 
-                ClearForm();
+                    MessageBox.Show("Account created successfully!");
 
-                this.Hide();
-                new Welcome_Form(_api, result.Role, result.Username).ShowDialog();
-                this.Close();
+                    ClearForm();
+
+                    Log.Information("User {Username} registered", result.Username);
+
+                    this.Hide();
+                    new Welcome_Form(_api, result.Role, result.Username).ShowDialog();
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
@@ -125,7 +222,7 @@ namespace P5_Frontend_Car_App
             finally
             {
                 btnSignUp.Enabled = true;
-                btnSignUp.Text = "Sign Up";
+                btnSignUp.Text = _otpSent ? "Verify Code" : "Sign Up";
             }
         }
         private bool ValidateInputs()

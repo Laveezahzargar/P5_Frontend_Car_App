@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
-using P5_Frontend_Car_App.Models;
-using Serilog;
-using P5_Frontend_Car_App.DTOs;
-using P5_Frontend_Car_App.Services;
+﻿using P5_Frontend_Car_App.DTOs;
 using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Types;
+using Serilog;
 
 namespace P5_Frontend_Car_App
 {
@@ -21,11 +10,13 @@ namespace P5_Frontend_Car_App
         int selectedManufacturerId = 0;
         private readonly IApiService api;
 
-        public Manufacturer_Form(IApiService apiService)
+        private readonly Role _role;
+        public Manufacturer_Form(IApiService apiService, Role role)
         {
             InitializeComponent();
             this.AutoScroll = true;
             api = apiService;
+            _role = role;
         }
 
         private async void Manufacturer_form_Load(object sender, EventArgs e)
@@ -39,6 +30,8 @@ namespace P5_Frontend_Car_App
             dataGridViewManufacturer.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             await LoadManufacturers();
+
+            ApplyRolePermissions();
         }
         void ApplyResponsiveLayout()
         {
@@ -95,6 +88,19 @@ namespace P5_Frontend_Car_App
         private void ApplyTheme()
         {
             this.BackColor = Color.White;
+        }
+        void ApplyRolePermissions()
+        {
+            if (_role != Role.Admin)
+            {
+                button1.Visible = false;
+
+                if (dataGridViewManufacturer.Columns["Edit"] != null)
+                    dataGridViewManufacturer.Columns["Edit"].Visible = false;
+
+                if (dataGridViewManufacturer.Columns["Delete"] != null)
+                    dataGridViewManufacturer.Columns["Delete"].Visible = false;
+            }
         }
 
         async Task LoadManufacturers()
@@ -238,7 +244,7 @@ namespace P5_Frontend_Car_App
                 if (selectedManufacturerId == 0)
                 {
                     // CREATE
-                   // await api.PostAsync("Manufacturer", data);
+                    await api.PostAsync<ApiResponse<int>>("Manufacturer", data);
                     Log.Information("User added new manufacturer: {ManufacturerName}", txtName.Text);
                 }
                 else

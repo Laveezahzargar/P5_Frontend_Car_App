@@ -1,17 +1,7 @@
-﻿using P5_Frontend_Car_App.Models;
-using P5_Frontend_Car_App.Types;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Serilog;
+﻿using Serilog;
 using P5_Frontend_Car_App.DTOs;
 using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Types;
 
 namespace P5_Frontend_Car_App
 {

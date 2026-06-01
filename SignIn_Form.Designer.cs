@@ -40,8 +40,16 @@
             linkRegister = new LinkLabel();
             chkShowPassword = new CheckBox();
             label6 = new Label();
+            lblOtp = new Label();
+            txtOtp = new TextBox();
             SuspendLayout();
             // 
+            // label1
+            // 
+            label1.Location = new Point(0, 0);
+            label1.Name = "label1";
+            label1.Size = new Size(100, 23);
+            label1.TabIndex = 12;
             // 
             // label2
             // 
@@ -87,7 +95,7 @@
             // 
             // btnLogin
             // 
-            btnLogin.Location = new Point(769, 214);
+            btnLogin.Location = new Point(780, 277);
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(94, 29);
             btnLogin.TabIndex = 6;
@@ -98,7 +106,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(642, 349);
+            label5.Location = new Point(642, 446);
             label5.Name = "label5";
             label5.Size = new Size(167, 20);
             label5.TabIndex = 7;
@@ -109,7 +117,7 @@
             linkForgot.AutoSize = true;
             linkForgot.LinkBehavior = LinkBehavior.NeverUnderline;
             linkForgot.LinkColor = Color.DimGray;
-            linkForgot.Location = new Point(657, 316);
+            linkForgot.Location = new Point(657, 416);
             linkForgot.Name = "linkForgot";
             linkForgot.Size = new Size(125, 20);
             linkForgot.TabIndex = 8;
@@ -121,7 +129,7 @@
             linkRegister.AutoSize = true;
             linkRegister.LinkBehavior = LinkBehavior.NeverUnderline;
             linkRegister.LinkColor = Color.DimGray;
-            linkRegister.Location = new Point(672, 384);
+            linkRegister.Location = new Point(672, 482);
             linkRegister.Name = "linkRegister";
             linkRegister.Size = new Size(110, 20);
             linkRegister.TabIndex = 9;
@@ -132,7 +140,7 @@
             // chkShowPassword
             // 
             chkShowPassword.AutoSize = true;
-            chkShowPassword.Location = new Point(576, 261);
+            chkShowPassword.Location = new Point(571, 324);
             chkShowPassword.Name = "chkShowPassword";
             chkShowPassword.Size = new Size(132, 24);
             chkShowPassword.TabIndex = 10;
@@ -143,17 +151,36 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(581, 489);
+            label6.Location = new Point(571, 570);
             label6.Name = "label6";
             label6.Size = new Size(303, 20);
             label6.TabIndex = 11;
             label6.Text = "© 2026 Car Showroom Management System";
+            // 
+            // lblOtp
+            // 
+            lblOtp.AutoSize = true;
+            lblOtp.Location = new Point(576, 230);
+            lblOtp.Name = "lblOtp";
+            lblOtp.Size = new Size(35, 20);
+            lblOtp.TabIndex = 13;
+            lblOtp.Text = "OTP";
+            // 
+            // txtOtp
+            // 
+            txtOtp.Location = new Point(686, 227);
+            txtOtp.Name = "txtOtp";
+            txtOtp.Size = new Size(198, 27);
+            txtOtp.TabIndex = 14;
+            txtOtp.TextChanged += textBox1_TextChanged;
             // 
             // SignIn_Form
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1432, 726);
+            Controls.Add(txtOtp);
+            Controls.Add(lblOtp);
             Controls.Add(label6);
             Controls.Add(chkShowPassword);
             Controls.Add(linkRegister);
@@ -187,5 +214,7 @@
         private LinkLabel linkRegister;
         private CheckBox chkShowPassword;
         private Label label6;
+        private Label lblOtp;
+        private TextBox txtOtp;
     }
 }

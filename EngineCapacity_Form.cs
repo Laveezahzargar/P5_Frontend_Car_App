@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using P5_Frontend_Car_App.Models;
-using Serilog;
-using P5_Frontend_Car_App.DTOs;
-using P5_Frontend_Car_App.Services;
+﻿using P5_Frontend_Car_App.DTOs;
 using P5_Frontend_Car_App.Interfaces;
+using P5_Frontend_Car_App.Models;
+using P5_Frontend_Car_App.Types;
+using Serilog;
+using System.Data;
 
 namespace P5_Frontend_Car_App
 {
@@ -20,12 +12,14 @@ namespace P5_Frontend_Car_App
         int selectedEngineId = 0;
 
         private readonly IApiService api;
+        private readonly Role _role;
 
-        public EngineCapacity_Form(IApiService apiService)
+        public EngineCapacity_Form(IApiService apiService, Role role)
         {
             InitializeComponent();
             this.AutoScroll = true;
             api = apiService;
+            _role = role;
         }
 
         private async void EngineCapacity_form_Load(object sender, EventArgs e)
@@ -38,8 +32,22 @@ namespace P5_Frontend_Car_App
             dataGridViewEngine.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             await LoadEngineCapacity();
-        }
 
+            ApplyRolePermissions();
+        }
+        void ApplyRolePermissions()
+        {
+            if (_role != Role.Admin)
+            {
+                button1.Visible = false;
+
+                if (dataGridViewEngine.Columns["Edit"] != null)
+                    dataGridViewEngine.Columns["Edit"].Visible = false;
+
+                if (dataGridViewEngine.Columns["Delete"] != null)
+                    dataGridViewEngine.Columns["Delete"].Visible = false;
+            }
+        }
         void ApplyResponsiveLayout()
         {
             dataGridViewEngine.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -70,15 +78,7 @@ namespace P5_Frontend_Car_App
             {
                 var list = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
 
-                dataGridViewEngine.DataSource = list
-                    .Select(e => new
-                    {
-                        e.Id,
-                        e.Name,
-                        e.Description,
-                        e.Capacity
-                    })
-                    .ToList();
+                dataGridViewEngine.DataSource = list;
 
                 AddButtons();
                 StyleGridButtons();
@@ -190,7 +190,7 @@ namespace P5_Frontend_Car_App
                 if (confirm != DialogResult.Yes)
                     return;
 
-                await api.DeleteAsync($"api/EngineCapacity/{id}");
+                await api.DeleteAsync($"EngineCapacity/{id}");
 
                 await LoadEngineCapacity();
 
@@ -239,7 +239,7 @@ namespace P5_Frontend_Car_App
 
                 if (selectedEngineId == 0)
                 {
-                   // await api.PostAsync("EngineCapacity", data);
+                    await api.PostAsync<ApiResponse<int>>("EngineCapacity", data);
                     Log.Information("User added new engine capacity: {EngineCapacityName}", txtName.Text);
                 }
                 else

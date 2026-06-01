@@ -1,13 +1,5 @@
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using P5_Frontend_Car_App.Interfaces;
-using P5_Frontend_Car_App.Services;
-
+using P5_Frontend_Car_App.Types;
 
 
 namespace P5_Frontend_Car_App
@@ -15,11 +7,14 @@ namespace P5_Frontend_Car_App
     public partial class Main_Form : Form
     {
         private readonly IApiService api;
-        public Main_Form(IApiService apiService)
+        private readonly Role _role;
+        public Main_Form(IApiService apiService,Role role)
         {
             InitializeComponent();
 
             api = apiService;
+
+            _role = role;
 
             Color bg = Color.White;
             Color panel = Color.FromArgb(245, 245, 245);
@@ -95,14 +90,14 @@ namespace P5_Frontend_Car_App
         private void btnManf_Click(object sender, EventArgs e)
         {
             this.Hide();
-            Manufacturer_Form f = new Manufacturer_Form(api);
+            Manufacturer_Form f = new Manufacturer_Form(api,_role);
             f.ShowDialog();
             this.Show();
         }
         private void btnEngine_Click(object sender, EventArgs e)
         {
             this.Hide();
-            EngineCapacity_Form f = new EngineCapacity_Form(api);
+            EngineCapacity_Form f = new EngineCapacity_Form(api,_role);
             f.ShowDialog();
             this.Show();
         }

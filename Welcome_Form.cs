@@ -127,7 +127,7 @@ namespace P5_Frontend_Car_App
         private void btnHomepage_Click(object sender, EventArgs e)
         {
             this.Hide();
-            var main_form = new Main_Form(api);
+            var main_form = new Main_Form(api,_role);
             main_form.ShowDialog();
             this.Show();
         }
