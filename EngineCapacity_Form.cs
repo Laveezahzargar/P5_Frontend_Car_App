@@ -76,7 +76,9 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
+                var response = await api.GetAsync<ApiResponse<List<EngineCapacityDto>>>("EngineCapacity");
+
+                var list = response.Data;
 
                 dataGridViewEngine.DataSource = list;
 

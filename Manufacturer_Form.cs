@@ -107,7 +107,9 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
+                var response = await api.GetAsync<ApiResponse<List<ManufacturerDto>>>("Manufacturer");
+
+                var list = response.Data;
 
                 dataGridViewManufacturer.DataSource = list;
 

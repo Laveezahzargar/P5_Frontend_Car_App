@@ -2,6 +2,7 @@
 using P5_Frontend_Car_App.DTOs;
 using P5_Frontend_Car_App.Interfaces;
 using P5_Frontend_Car_App.Types;
+using Azure;
 
 namespace P5_Frontend_Car_App
 {
@@ -114,7 +115,9 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<CarDto>>("Car");
+                var response = await api.GetAsync<ApiResponse<List<CarDto>>>("Car");
+
+                var list = response.Data;
 
                 if (filterManufacturerId != 0)
                     list = list.Where(c => c.ManufacturerId == filterManufacturerId).ToList();
@@ -160,7 +163,9 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
+                var response = await api.GetAsync<ApiResponse<List<ManufacturerDto>>>("Manufacturer");
+
+                var list = response.Data;
 
                 cmbManufacturerId.DisplayMember = "Name";
                 cmbManufacturerId.ValueMember = "Id";
@@ -177,8 +182,9 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var list = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
+                var response = await api.GetAsync<ApiResponse<List<EngineCapacityDto>>>("EngineCapacity");
 
+                var list = response.Data;
                 cmbEngineId.DisplayMember = "Capacity";
                 cmbEngineId.ValueMember = "Id";
                 cmbEngineId.DataSource = list;
