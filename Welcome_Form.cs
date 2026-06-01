@@ -16,8 +16,8 @@ namespace P5_Frontend_Car_App
     {
         private readonly IApiService api;
         private Role _role;
-        private string Username;
-        public Welcome_Form(IApiService apiService, Role role,string Username)
+        private string FullName;
+        public Welcome_Form(IApiService apiService, Role role,string FullName)
         {
             InitializeComponent();
             api = apiService;
@@ -29,7 +29,7 @@ namespace P5_Frontend_Car_App
             ApplyTheme();
             ApplyResponsiveLayout();
             _role = role;
-            this.Username= Username;
+            this.FullName= FullName;
         }
         private void ApplyTheme()
         {
@@ -114,7 +114,7 @@ namespace P5_Frontend_Car_App
         }
         private void WelcomeForm_Load(object sender, EventArgs e)
         {
-            lblUsername.Text = $"Welcome, {Username} 👋";
+            lblUsername.Text = $"Welcome, {FullName} 👋";
             if (_role == Role.Customer)
             {
                 btnHomepage.Visible = false; // hide button
