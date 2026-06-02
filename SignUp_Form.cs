@@ -1,6 +1,7 @@
 ﻿using P5_Frontend_Car_App.Interfaces;
 using Serilog;
 using P5_Frontend_Car_App.DTOs.User;
+using P5_Frontend_Car_App.DTOs;
 
 namespace P5_Frontend_Car_App
 {
@@ -186,7 +187,7 @@ namespace P5_Frontend_Car_App
                     btnSignUp.Enabled = false;
                     btnSignUp.Text = "Verifying...";
 
-                    var result = await _api.PostAsync<UserDto>(
+                    var result = await _api.PostAsync<AuthResponseDto>(
                         "User/VerifyAndCreate",
                         new RegisterRequestDto
                         {
@@ -205,12 +206,14 @@ namespace P5_Frontend_Car_App
 
                     MessageBox.Show("Account created successfully!");
 
+                    Session.Token = result.Token;
+
                     ClearForm();
 
-                    Log.Information("User {Username} registered", result.Username);
+                    Log.Information("User {Username} registered", result.Data.Username);
 
                     this.Hide();
-                    new Welcome_Form(_api, result.Role, result.Username).ShowDialog();
+                    new Welcome_Form(_api, result.Data.Role, result.Data.Username).ShowDialog();
                     this.Close();
                 }
             }

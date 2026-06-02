@@ -1,4 +1,5 @@
-﻿using P5_Frontend_Car_App.DTOs.User;
+﻿using P5_Frontend_Car_App.DTOs;
+using P5_Frontend_Car_App.DTOs.User;
 using P5_Frontend_Car_App.Interfaces;
 using Serilog;
 using System.Drawing.Drawing2D;
@@ -226,6 +227,8 @@ namespace P5_Frontend_Car_App
                     }
 
                     MessageBox.Show("Login successful!");
+
+                    Session.Token = result.Token;
 
                     this.Hide();
                     new Welcome_Form(_api, result.Role, result.Username).ShowDialog();

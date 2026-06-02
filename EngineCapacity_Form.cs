@@ -128,8 +128,10 @@ namespace P5_Frontend_Car_App
 
             if (col == "ViewCars")
             {
+                int currentEngineId = id;
+
                 this.Hide();
-                var form = new Car_Form(api,null, id);
+                var form = new Car_Form(api,null,id );
                 form.ShowDialog();
                 this.Show();
             }
@@ -219,7 +221,9 @@ namespace P5_Frontend_Car_App
                     MessageBox.Show("Fill all fields");
                     return;
                 }
-                var engines = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
+                var engine = await api.GetAsync<ApiResponse<List<EngineCapacityDto>>>("EngineCapacity");
+
+                var engines = engine.Data;
 
                 bool exists = engines.Any(e =>
                    (e.Name.Trim().ToLower() == txtName.Text.Trim().ToLower()

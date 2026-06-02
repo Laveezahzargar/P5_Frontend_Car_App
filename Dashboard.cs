@@ -192,10 +192,15 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var cars = await api.GetAsync<List<CarDto>>("Car");
-                var manufacturers = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
-                var engines = await api.GetAsync<List<EngineCapacityDto>>("EngineCapacity");
-                var users = await api.GetAsync<List<UserDto>>("User");
+                var car = await api.GetAsync<ApiResponse<List<CarDto>>>("Car");
+                var manufacturer = await api.GetAsync<ApiResponse<List<ManufacturerDto>>>("Manufacturer");
+                var engine = await api.GetAsync<ApiResponse<List<EngineCapacityDto>>>("EngineCapacity");
+                var user = await api.GetAsync<ApiResponse<List<UserDto>>>("User");
+
+                var cars = car.Data;
+                var manufacturers = manufacturer.Data;
+                var engines = engine.Data;
+                var users = user.Data;
 
                 lblTotalUsers.Text = users.Count.ToString();
 

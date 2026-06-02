@@ -162,6 +162,7 @@ namespace P5_Frontend_Car_App
 
             if (column == "ViewCars")
             {
+                int currentManfId = id;
                 this.Hide();
                 var form = new Car_Form(api, id, null);
                 form.ShowDialog();
@@ -228,11 +229,13 @@ namespace P5_Frontend_Car_App
 
                 var data = new
                 {
-                    name = txtName.Text,
-                    description = txtDescription.Text
+                    Name = txtName.Text.Trim(),
+                    Description = txtDescription.Text.Trim()
                 };
 
-                var manufacturers = await api.GetAsync<List<ManufacturerDto>>("Manufacturer");
+                var manf = await api.GetAsync<ApiResponse<List<ManufacturerDto>>>("Manufacturer");
+
+                var manufacturers = manf.Data;
 
                 bool exists = manufacturers.Any(m =>
                     m.Name.ToLower() == txtName.Text.Trim().ToLower()
@@ -268,7 +271,7 @@ namespace P5_Frontend_Car_App
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to add/update manufacturer.");
-                MessageBox.Show("Operation failed.");
+                MessageBox.Show(ex.Message);
             }
         }
 

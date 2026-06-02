@@ -43,13 +43,14 @@ namespace P5_Frontend_Car_App
             dataGridViewCar.AutoGenerateColumns = true;
             dataGridViewCar.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
+
             LoadDropdowns();
             LoadYears();
 
             await LoadManufacturers();
             await LoadEngineCapacity();
-            await LoadCars();
 
+           // ClearForm();
             if (_manuId != 0)
             {
                 cmbManufacturerId.SelectedValue = _manuId;
@@ -62,7 +63,7 @@ namespace P5_Frontend_Car_App
                 cmbEngineId.Enabled = false;
             }
 
-            ClearForm();
+            await LoadCars();
         }
 
         void ApplyResponsiveLayout()
@@ -347,7 +348,9 @@ namespace P5_Frontend_Car_App
                     return;
                 }
 
-                var cars = await api.GetAsync<List<CarDto>>("Car");
+                var result = await api.GetAsync<ApiResponse<List<CarDto>>>("Car");
+
+                var cars = result.Data;
 
                 bool exists = cars.Any(c =>
                     c.Name.Trim().ToLower() == txtName.Text.Trim().ToLower()
@@ -362,6 +365,10 @@ namespace P5_Frontend_Car_App
                 }
 
                 using var client = new HttpClient();
+
+                client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Session.Token);
+
                 using var form = new MultipartFormDataContent();
 
                 form.Add(new StringContent(txtName.Text.Trim()), "Name");
@@ -393,19 +400,19 @@ namespace P5_Frontend_Car_App
 
                 if (selectedCarId == 0)
                 {
-                    response = await client.PostAsync("http://localhost:5294/api/car", form);
+                    response = await client.PostAsync("http://localhost:5294/api/Car", form);
                     Log.Information("User added new car: {CarName}", txtName.Text);
                 }
                 else
                 {
-                    response = await client.PutAsync($"http://localhost:5294/api/car/{selectedCarId}", form);
+                    response = await client.PutAsync($"http://localhost:5294/api/Car/{selectedCarId}", form);
                     Log.Information("User updated car: {CarId}, Name: {CarName}", selectedCarId, txtName.Text);
                 }
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    MessageBox.Show($"Failed: {error}");
+                    MessageBox.Show($"Failed ({response.StatusCode}): {error}");
                     return;
                 }
 
@@ -416,7 +423,7 @@ namespace P5_Frontend_Car_App
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to add/update cars");
-                MessageBox.Show("Failed to add/update cars");
+                MessageBox.Show(ex.Message,"Failed to add/update cars");
             }
           }
 

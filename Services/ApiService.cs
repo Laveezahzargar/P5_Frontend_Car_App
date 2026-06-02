@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using P5_Frontend_Car_App.DTOs;
 using P5_Frontend_Car_App.Interfaces;
 using Serilog;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -19,6 +20,14 @@ public class ApiService : IApiService
 
     public async Task<T> GetAsync<T>(string endpoint, CancellationToken ct=default)
     {
+        _http.DefaultRequestHeaders.Remove("Authorization");
+
+        if (!string.IsNullOrEmpty(Session.Token))
+        {
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", Session.Token);
+        }
+
         Log.Information("GET Request: {Endpoint}", endpoint);
         var res = await _http.GetAsync(endpoint,ct);
 
@@ -46,6 +55,14 @@ public class ApiService : IApiService
 
     public async Task<T> PostAsync<T>(string endpoint, object data, CancellationToken ct=default)
     {
+        _http.DefaultRequestHeaders.Remove("Authorization");
+
+        if (!string.IsNullOrEmpty(Session.Token))
+        {
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", Session.Token);
+        }
+
         var json = JsonSerializer.Serialize(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -77,6 +94,14 @@ public class ApiService : IApiService
 
     public async Task PutAsync(string endpoint, object data, CancellationToken ct = default)
     {
+        _http.DefaultRequestHeaders.Remove("Authorization");
+
+        if (!string.IsNullOrEmpty(Session.Token))
+        {
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", Session.Token);
+        }
+
         var json = JsonSerializer.Serialize(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -100,6 +125,14 @@ public class ApiService : IApiService
     public async Task DeleteAsync(string endpoint, CancellationToken ct = default)
     {
         Log.Information("DELETE Request: {Endpoint}", endpoint);
+
+        _http.DefaultRequestHeaders.Remove("Authorization");
+
+        if (!string.IsNullOrEmpty(Session.Token))
+        {
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", Session.Token);
+        }
 
         var response = await _http.DeleteAsync(endpoint, ct);
         var responseBody = await response.Content.ReadAsStringAsync(ct);
