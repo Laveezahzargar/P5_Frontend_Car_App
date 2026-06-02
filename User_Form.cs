@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Serilog;
 using P5_Frontend_Car_App.DTOs.User;
+using P5_Frontend_Car_App.DTOs;
 
 namespace P5_Frontend_Car_App
 {
@@ -208,7 +209,9 @@ namespace P5_Frontend_Car_App
         {
             try
             {
-                var users = await api.GetAsync<List<UserDto>>("user");
+                var user = await api.GetAsync<ApiResponse<List<UserDto>>>("user");
+
+                var users = user.Data;
 
                 if (users == null || users.Count == 0)
                 {

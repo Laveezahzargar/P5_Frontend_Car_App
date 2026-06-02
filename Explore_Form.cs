@@ -46,7 +46,9 @@ namespace P5_Frontend_Car_App
 
         async Task LoadCars()
         {
-            var cars = await _api.GetAsync<List<CarDto>>("Car");
+            var car1 = await _api.GetAsync<ApiResponse<List<CarDto>>>("Car");
+
+            var cars = car1.Data;
 
             flow.Controls.Clear();
 
